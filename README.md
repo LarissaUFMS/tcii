@@ -1,3 +1,0 @@
-# tcii
-
-TCII souce code
