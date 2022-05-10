@@ -14,7 +14,7 @@ shapeTest()
   using namespace geo;
   using namespace util;
 
-  LinkedList<Shape*> shapes;
+  LinkedList<ShapePtr> shapes;
 
   printUsedMemory();
   shapes.add(Allocator::New<Circle>(Point2{2, 2}, 1.0f));

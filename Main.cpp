@@ -47,7 +47,7 @@ int
 main()
 {
   //typeTest();
-  vectorTest();
+  //vectorTest();
   //matrixTest();
   /*
   String s1;
@@ -57,11 +57,9 @@ main()
   s1 = s3;
   printf("s1:%s (size: %lld)\n", s1.c_str(), s1.size());
   */
-  /*
   shapeTest();
   printUsedMemory();
   printMemoryMap();
-  */
   //ftTest();
   //listTest();
   puts("Press any key to exit...");

@@ -11,18 +11,33 @@ class Vector;
 class VectorBody: public util::SharedObject
 {
 public:
-  ~VectorBody()
+  void* operator new(size_t size, int n)
   {
-    delete []_data;
+    return ::operator new(size + n * sizeof(float));
+  }
+
+  void operator delete(void* ptr, int)
+  {
+    ::operator delete(ptr);
+  }
+
+  void operator delete(void* ptr)
+  {
+    ::operator delete(ptr);
   }
 
 private:
+  static auto New(int n)
+  {
+    return new (n) VectorBody{n};
+  }
+
   VectorBody() = default;
 
-  VectorBody(int n)
+  VectorBody(int n):
+    _n{n}
   {
-    _n = n;
-    _data = new float[n];
+    _data = reinterpret_cast<float*>(this + 1);
   }
 
   VectorBody(const VectorBody&);
@@ -55,7 +70,7 @@ public:
   }
 
   Vector(int n):
-    Vector{new VectorBody{n}}
+    Vector{VectorBody::New(n)}
   {
     // do nothing
   }
@@ -68,7 +83,7 @@ public:
 
   auto clone() const
   {
-    return Vector{new VectorBody{*_body}};
+    return Vector{new (_body->_n) VectorBody{*_body}};
   }
 
   auto size() const

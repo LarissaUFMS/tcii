@@ -26,7 +26,7 @@ VectorBody::add(const VectorBody* b) const
   if (_n != b->_n)
     ; // TODO
 
-  auto c = new VectorBody{_n};
+  auto c = New(_n);
 
   for (auto i = 0; i < _n; ++i)
     c->_data[i] = _data[i] + b->_data[i];
@@ -39,7 +39,7 @@ VectorBody::sub(const VectorBody* b) const
   if (_n != b->_n)
     ; // TODO
 
-  auto c = new VectorBody{_n};
+  auto c = New(_n);
 
   for (auto i = 0; i < _n; ++i)
     c->_data[i] = _data[i] - b->_data[i];
@@ -49,7 +49,7 @@ VectorBody::sub(const VectorBody* b) const
 VectorBody*
 VectorBody::mul(float s) const
 {
-  auto c = new VectorBody{_n};
+  auto c = New(_n);
 
   for (auto i = 0; i < _n; ++i)
     c->_data[i] = _data[i] * s;

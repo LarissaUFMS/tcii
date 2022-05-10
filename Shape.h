@@ -1,14 +1,17 @@
 #ifndef __Shape_h
 #define __Shape_h
 
+#include "SharedObject.h"
 #include "Util.h"
 
 namespace geo
 { // begin namespace geo
 
-class Shape
+class Shape: public util::SharedObject
 {
 public:
+  virtual ~Shape() = default;
+
   auto id() const
   {
     return _id;
@@ -34,6 +37,19 @@ private:
 
 }; // Shape
 
+using ShapePtr = util::ObjectPtr<Shape>;
+
 } // end namespace geo
+
+namespace util
+{ // begin namespace util
+
+inline void
+destroy(geo::Shape* shape)
+{
+  Allocator::Delete(shape);
+}
+
+} // end namespace util
 
 #endif // __Shape_h

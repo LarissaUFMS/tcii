@@ -20,6 +20,13 @@ isSharedObject()
 
 #define ASSERT_SHARED(T, msg) static_assert(isSharedObject<T>(), msg)
 
+template <typename T>
+inline void
+destroy(T* ptr)
+{
+  delete ptr;
+}
+
 class SharedObject
 {
 public:
@@ -42,7 +49,7 @@ public:
   {
     ASSERT_SHARED(T, "Pointer to shared object expected");
     if (object != nullptr && --object->_useCount <= 0)
-      delete object;
+      destroy(object);
   }
 
 private:
