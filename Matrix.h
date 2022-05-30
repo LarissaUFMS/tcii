@@ -65,13 +65,13 @@ public:
   Matrix operator +(const Matrix&) const;
   Matrix operator -(const Matrix&) const;
   Matrix operator *(const Matrix&) const;
-  Matrix operator *(const Vector&) const;
+  Matrix operator *(const VectorXf&) const;
   Matrix operator *(float) const;
 
   Matrix& operator +=(const Matrix&);
   Matrix& operator -=(const Matrix&);
   Matrix& operator *=(const Matrix&);
-  Matrix& operator *=(const Vector&);
+  Matrix& operator *=(const VectorXf&);
   Matrix& operator *=(float);
 
   Matrix transpose() const;

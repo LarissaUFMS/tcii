@@ -35,7 +35,7 @@
     <ClCompile Include="MatrixTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector.cpp">
+    <ClCompile Include="FloatVector.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp">
@@ -61,7 +61,7 @@
     <ClInclude Include="Matrix.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="FloatVector.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
     <ClInclude Include="String.h">
@@ -93,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="SharedObject.h">
       <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

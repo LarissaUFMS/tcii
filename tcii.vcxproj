@@ -92,7 +92,7 @@
     <ClCompile Include="ShapeTest.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="TypeTest.cpp" />
-    <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="FloatVector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
@@ -106,6 +106,7 @@
     <ClInclude Include="SharedObject.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="FloatVector.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -12,16 +12,16 @@ vectorTest()
 {
   using namespace math;
 
-  auto u = Vector{10};
+  auto u = VectorXf{10};
 
   for (int i = 0; i < u.size(); ++i)
     u(i) = float(i);
 
   auto c = u.clone();
   auto v = u;
-  Vector q;
+  VectorXf q;
 
-  q = u += c;
+  q = u += 2.0f * c;
   for (int i = 0; i < q.size(); ++i)
     printf("q(%d)=%g\n", i, q(i));
   for (int i = 0; i < v.size(); ++i)

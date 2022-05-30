@@ -6,17 +6,18 @@
 namespace math
 { // begin namespace math
 
-class Vector;
+template <typename T, size_t N> class Vector;
 
+template <typename T>
 class VectorBody: public util::SharedObject
 {
 public:
-  void* operator new(size_t size, int n)
+  void* operator new(size_t size, size_t n)
   {
-    return ::operator new(size + n * sizeof(float));
+    return ::operator new(size + n * sizeof(T));
   }
 
-  void operator delete(void* ptr, int)
+  void operator delete(void* ptr, size_t)
   {
     ::operator delete(ptr);
   }
@@ -27,55 +28,146 @@ public:
   }
 
 private:
-  static auto New(int n)
+  using body_type = VectorBody<T>;
+
+  static auto New(size_t n)
   {
-    return new (n) VectorBody{n};
+    return new (n) body_type{n};
   }
 
   VectorBody() = default;
 
-  VectorBody(int n):
+  VectorBody(size_t n):
     _n{n}
   {
-    _data = reinterpret_cast<float*>(this + 1);
+    _data = reinterpret_cast<T*>(this + 1);
   }
 
-  VectorBody(const VectorBody&);
+  VectorBody(const body_type&);
 
-  VectorBody* add(const VectorBody*) const;
-  VectorBody* sub(const VectorBody*) const;
-  VectorBody* mul(float) const;
+  body_type* add(const body_type*) const;
+  body_type* sub(const body_type*) const;
+  body_type* mul(const T&) const;
 
-  void add_eq(const VectorBody*);
-  void sub_eq(const VectorBody*);
-  void mul_eq(float);
+  void add_eq(const body_type*);
+  void sub_eq(const body_type*);
+  void mul_eq(const T&);
 
 private:
-  int _n{};
-  float* _data{};
+  size_t _n{};
+  T* _data{};
 
-  static VectorBody* null();
+  static body_type* null();
 
-  friend Vector;
+  friend Vector<T, 0>;
 
 };  // VectorBody
 
-class Vector
+template <typename T>
+VectorBody<T>*
+VectorBody<T>::null()
+{
+  static body_type _null;
+
+  if (_null.useCount() == 0)
+    body_type::makeUse(&_null);
+  return &_null;
+}
+
+template <typename T>
+VectorBody<T>::VectorBody(const body_type& other):
+  VectorBody{other._n}
+{
+  for (auto i = 0; i < _n; ++i)
+    _data[i] = other._data[i];
+}
+
+template <typename T>
+VectorBody<T>*
+VectorBody<T>::add(const body_type* b) const
+{
+  if (_n != b->_n)
+    ; // TODO
+
+  auto c = New(_n);
+
+  for (auto i = 0; i < _n; ++i)
+    c->_data[i] = _data[i] + b->_data[i];
+  return c;
+}
+
+template <typename T>
+VectorBody<T>*
+VectorBody<T>::sub(const body_type* b) const
+{
+  if (_n != b->_n)
+    ; // TODO
+
+  auto c = New(_n);
+
+  for (auto i = 0; i < _n; ++i)
+    c->_data[i] = _data[i] - b->_data[i];
+  return c;
+}
+
+template <typename T>
+VectorBody<T>*
+VectorBody<T>::mul(const T& s) const
+{
+  auto c = New(_n);
+
+  for (auto i = 0; i < _n; ++i)
+    c->_data[i] = _data[i] * s;
+  return c;
+}
+
+template <typename T>
+void
+VectorBody<T>::add_eq(const body_type* b)
+{
+  if (_n != b->_n)
+    ; // TODO
+  for (auto i = 0; i < _n; ++i)
+    _data[i] += b->_data[i];
+}
+
+template <typename T>
+void
+VectorBody<T>::sub_eq(const body_type* b)
+{
+  if (_n != b->_n)
+    ; // TODO
+  for (auto i = 0; i < _n; ++i)
+    _data[i] -= b->_data[i];
+}
+
+template <typename T>
+void
+VectorBody<T>::mul_eq(const T& s)
+{
+  for (auto i = 0; i < _n; ++i)
+    _data[i] *= s;
+}
+
+template <typename T>
+class Vector<T, 0>
 {
 public:
+  using vector_type = Vector<T, 0>;
+
   Vector():
-    Vector{VectorBody::null()}
+    Vector{VectorBody<T>::null()}
   {
     // do nothing
   }
 
   Vector(int n):
-    Vector{VectorBody::New(n)}
+    Vector{VectorBody<T>::New(n)}
   {
     // do nothing
   }
 
-  Vector(const Vector& other):
+  Vector(const vector_type& other):
     Vector{other._body}
   {
     // do nothing
@@ -83,7 +175,7 @@ public:
 
   auto clone() const
   {
-    return Vector{new (_body->_n) VectorBody{*_body}};
+    return vector_type{new (_body->_n) VectorBody<T>{*_body}};
   }
 
   auto size() const
@@ -111,43 +203,43 @@ public:
     return *this;
   }
 
-  auto operator +(const Vector& b) const
+  auto operator +(const vector_type& b) const
   {
-    return Vector{_body->add(b._body)};
+    return vector_type{_body->add(b._body)};
   }
 
-  auto operator -(const Vector& b) const
+  auto operator -(const vector_type& b) const
   {
-    return Vector{_body->sub(b._body)};
+    return vector_type{_body->sub(b._body)};
   }
 
-  auto operator *(float s) const
+  auto operator *(const T& s) const
   {
-    return Vector{_body->mul(s)};
+    return vector_type{_body->mul(s)};
   }
 
-  auto& operator +=(const Vector& b)
+  auto& operator +=(const vector_type& b)
   {
     _body->add_eq(b._body);
     return *this;
   }
 
-  auto& operator -=(const Vector& b)
+  auto& operator -=(const vector_type& b)
   {
     _body->sub_eq(b._body);
     return *this;
   }
 
-  auto & operator *=(float s)
+  auto& operator *=(const T& s)
   {
     _body->mul_eq(s);
     return *this;
   }
 
 private:
-  util::ObjectPtr<VectorBody> _body;
+  util::ObjectPtr<VectorBody<T>> _body;
 
-  Vector(const VectorBody* body):
+  Vector(const VectorBody<T>* body):
     _body{body}
   {
     // do nothing
@@ -155,10 +247,13 @@ private:
 
 };  // Vector
 
+using VectorXf = Vector<float, 0>;
+
 } // end namespace math
 
+template <typename T, size_t N>
 inline auto
-operator *(float s, const math::Vector& v)
+operator *(const T& s, const math::Vector<T, N>& v)
 {
   return v * s;
 }
