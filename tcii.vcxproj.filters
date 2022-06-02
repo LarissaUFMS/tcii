@@ -24,6 +24,9 @@
     <Filter Include="Header Files\util">
       <UniqueIdentifier>{7e7edaea-64ba-46bc-851a-2eda6300e395}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{d6549051-1418-4807-8e10-09b78b9a9204}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TypeTest.cpp">
@@ -55,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="ShapeTest.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Source Files\util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,9 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Header Files\util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -41,7 +41,7 @@ public:
     _usedMemory += typeInfo.size;
     _memoryMap[ptr] = typeInfo;
 #ifdef _DEBUG
-    printf("**Allocating %s (%lld B)\n", typeInfo.name, typeInfo.size);
+    printf("**Allocating %s (%llu B)\n", typeInfo.name, typeInfo.size);
 #endif
     return ptr;
   }
@@ -53,7 +53,7 @@ public:
     {
       _usedMemory -= e->second.size;
 #ifdef _DEBUG
-      printf("**Freeing %s (%lld B)\n", e->second.name, e->second.size);
+      printf("**Freeing %s (%llu B)\n", e->second.name, e->second.size);
 #endif
       _memoryMap.erase(e);
       delete ptr;
@@ -73,7 +73,7 @@ private:
 inline void
 printUsedMemory()
 {
-  printf("Used Memory: %lld bytes\n", util::Allocator::usedMemory());
+  printf("Used Memory: %llu bytes\n", util::Allocator::usedMemory());
 }
 
 inline void
@@ -84,7 +84,7 @@ printMemoryMap()
     puts("       Ptr       | Size (B) | Type Name");
     util::Allocator::debug([](auto ptr, const auto& typeInfo)
       {
-        printf("%p | %08lld | %s\n", ptr, typeInfo.size, typeInfo.name);
+        printf("%p | %08llu | %s\n", ptr, typeInfo.size, typeInfo.name);
       });
   }
 }

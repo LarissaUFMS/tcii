@@ -10,6 +10,8 @@ print(const math::Matrix::Element& e)
 void
 vectorTest()
 {
+  puts("**VECTOR TEST**");
+
   using namespace math;
 
   auto u = VectorXf{10};
@@ -26,11 +28,14 @@ vectorTest()
     printf("q(%d)=%g\n", i, q(i));
   for (int i = 0; i < v.size(); ++i)
     printf("v(%d)=%g\n", i, v(i));
+  q + VectorXf{}; // error
 }
 
 void
 matrixTest()
 {
+  puts("**MATRIX TEST**");
+
   using namespace math;
 
   auto a = Matrix{3, 3};
@@ -48,5 +53,10 @@ matrixTest()
       std::cout << c(i, j) << ' ';
     std::cout << '\n';
   }
+  // copy op
+  a = c;
+  c.iterate(print);
+  // move op
+  b = std::move(c);
   c.iterate(print);
 }

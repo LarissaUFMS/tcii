@@ -1,10 +1,26 @@
 #ifndef __Vector_h
 #define __Vector_h
 
+#include "Exception.h"
 #include "SharedObject.h"
 
 namespace math
 { // begin namespace math
+
+inline auto
+vectorDimensionMustAgree(size_t n1, size_t n2)
+{
+  util::error<std::logic_error>("Vector dimensions "
+    "%llu and %llu must agree",
+    n1,
+    n2);
+}
+
+inline auto
+vectorIndexOutOfRange()
+{
+  util::error<std::logic_error>("Vector index out of range");
+}
 
 template <typename T, size_t N> class Vector;
 
@@ -44,6 +60,11 @@ private:
   }
 
   VectorBody(const body_type&);
+
+  auto clone() const
+  {
+    return new (_n) body_type{*this};
+  }
 
   body_type* add(const body_type*) const;
   body_type* sub(const body_type*) const;
@@ -87,7 +108,7 @@ VectorBody<T>*
 VectorBody<T>::add(const body_type* b) const
 {
   if (_n != b->_n)
-    ; // TODO
+    vectorDimensionMustAgree(_n, b->_n);
 
   auto c = New(_n);
 
@@ -101,7 +122,7 @@ VectorBody<T>*
 VectorBody<T>::sub(const body_type* b) const
 {
   if (_n != b->_n)
-    ; // TODO
+    vectorDimensionMustAgree(_n, b->_n);
 
   auto c = New(_n);
 
@@ -126,7 +147,7 @@ void
 VectorBody<T>::add_eq(const body_type* b)
 {
   if (_n != b->_n)
-    ; // TODO
+    vectorDimensionMustAgree(_n, b->_n);
   for (auto i = 0; i < _n; ++i)
     _data[i] += b->_data[i];
 }
@@ -136,7 +157,7 @@ void
 VectorBody<T>::sub_eq(const body_type* b)
 {
   if (_n != b->_n)
-    ; // TODO
+    vectorDimensionMustAgree(_n, b->_n);
   for (auto i = 0; i < _n; ++i)
     _data[i] -= b->_data[i];
 }
@@ -175,7 +196,7 @@ public:
 
   auto clone() const
   {
-    return vector_type{new (_body->_n) VectorBody<T>{*_body}};
+    return vector_type{_body->clone()};
   }
 
   auto size() const
@@ -186,14 +207,15 @@ public:
   auto operator ()(int i) const
   {
     if (i < 0 || i >= _body->_n)
-      ; // TODO
+      vectorIndexOutOfRange();
     return _body->_data[i];
   }
 
   auto& operator ()(int i)
   {
     if (i < 0 || i >= _body->_n)
-      ; // TODO
+      vectorIndexOutOfRange();
+    checkCopyOnWrite();
     return _body->_data[i];
   }
 
@@ -220,18 +242,21 @@ public:
 
   auto& operator +=(const vector_type& b)
   {
+    checkCopyOnWrite();
     _body->add_eq(b._body);
     return *this;
   }
 
   auto& operator -=(const vector_type& b)
   {
+    checkCopyOnWrite();
     _body->sub_eq(b._body);
     return *this;
   }
 
   auto& operator *=(const T& s)
   {
+    checkCopyOnWrite();
     _body->mul_eq(s);
     return *this;
   }
@@ -243,6 +268,12 @@ private:
     _body{body}
   {
     // do nothing
+  }
+
+  void checkCopyOnWrite()
+  {
+    if (_body->useCount() > 1)
+      _body = _body->clone();
   }
 
 };  // Vector

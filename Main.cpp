@@ -44,18 +44,18 @@ listTest()
 }
 
 int
-main()
+main() try
 {
   //typeTest();
-  vectorTest();
-  //matrixTest();
+  //vectorTest();
+  matrixTest();
   /*
   String s1;
   String s2 = "c";
   String s3 = s2;
 
   s1 = s3;
-  printf("s1:%s (size: %lld)\n", s1.c_str(), s1.size());
+  printf("s1:%s (size: %llu)\n", s1.c_str(), s1.size());
   */
   /*
   shapeTest();
@@ -67,4 +67,14 @@ main()
   puts("Press any key to exit...");
   (void)getchar();
   return 0;
+}
+catch (const std::exception& e)
+{
+  printf("**Error: %s\n", e.what());
+  return 1;
+}
+catch (...)
+{
+  puts("**Unexpected error");
+  return 2;
 }

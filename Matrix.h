@@ -6,6 +6,12 @@
 namespace math
 { // begin namespace math
 
+inline auto
+matrixIndexOutOfRange()
+{
+  util::error<std::logic_error>("Matrix index out of range");
+}
+
 class Matrix
 {
 public:
@@ -30,10 +36,11 @@ public:
   }
 
   Matrix(const Matrix&);
+  Matrix(Matrix&&) noexcept;
 
   ~Matrix()
   {
-    delete[]_data;
+    delete []_data;
   }
 
   auto rows() const
@@ -49,18 +56,19 @@ public:
   auto operator ()(int i, int j) const
   {
     if (i < 0 || i >= _m || j < 0 || j >= _n)
-      ; // TODO
+      matrixIndexOutOfRange();
     return _data[i * _n + j];
   }
 
   auto& operator ()(int i, int j)
   {
     if (i < 0 || i >= _m || j < 0 || j >= _n)
-      ; // TODO
+      matrixIndexOutOfRange();
     return _data[i * _n + j];
   }
 
   Matrix& operator =(const Matrix&);
+  Matrix& operator =(Matrix&&) noexcept;
 
   Matrix operator +(const Matrix&) const;
   Matrix operator -(const Matrix&) const;
