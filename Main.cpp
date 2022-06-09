@@ -1,3 +1,4 @@
+#include "DflOp.h"
 #include "FunctionTemplate.h"
 #include "LinkedList.h"
 
@@ -48,7 +49,7 @@ main() try
 {
   //typeTest();
   //vectorTest();
-  matrixTest();
+  //matrixTest();
   /*
   String s1;
   String s2 = "c";
@@ -64,6 +65,7 @@ main() try
   */
   //ftTest();
   //listTest();
+  testDflOp();
   puts("Press any key to exit...");
   (void)getchar();
   return 0;

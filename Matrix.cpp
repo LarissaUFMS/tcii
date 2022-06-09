@@ -22,12 +22,13 @@ Matrix::Matrix(const Matrix& other):
     _data[i] = other._data[i];
 }
 
-Matrix::Matrix(Matrix&& other) noexcept:
-  Matrix{other._m, other._n}
+Matrix::Matrix(Matrix&& other) noexcept
 {
 #ifdef _DEBUG
   puts("**Matrix move ctor**");
 #endif // _DEBUG
+  _m = other._m;
+  _n = other._n;
   _data = other._data;
   other._m = other._n = 0;
   other._data = nullptr;

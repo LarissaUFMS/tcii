@@ -92,13 +92,14 @@
     <ClCompile Include="ShapeList.cpp" />
     <ClCompile Include="ShapeTest.cpp" />
     <ClCompile Include="String.cpp" />
-    <ClCompile Include="TypeTest.cpp" />
     <ClCompile Include="FloatVector.cpp" />
+    <ClCompile Include="TypeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FunctionTemplate.h" />
+    <ClInclude Include="DflOp.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Point2.h" />

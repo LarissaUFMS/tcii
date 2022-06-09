@@ -64,7 +64,7 @@ public:
     return *this;
   }
 
-  auto operator ++(int) // pos-increment
+  auto operator ++(int) // post-increment
   {
     auto temp = *this;
 
