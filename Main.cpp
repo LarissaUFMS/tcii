@@ -1,5 +1,6 @@
 #include "DflOp.h"
 #include "FunctionTemplate.h"
+#include "Lambda.h"
 #include "LinkedList.h"
 
 void typeTest();
@@ -44,6 +45,29 @@ listTest()
   printUsedMemory();
 }
 
+template <typename F, typename... Args>
+inline void
+call(F&& f, Args&&... args)
+{
+  f(std::forward<Args>(args)...);
+}
+
+void
+lambdaTest(const char* name)
+{
+  Functor<int, int, int> f{name};
+  auto fp = varfunc<int, int, int>{f};
+  auto lf = [name](int i, int j, int k)
+  {
+    varprint(name, ':', i, j, k);
+  };
+
+  f(1, 2, 3);
+  call(fp, 1, 2, 3);
+  fp = lf;
+  call(fp, 1, 2, 3);
+}
+
 int
 main() try
 {
@@ -65,7 +89,8 @@ main() try
   */
   //ftTest();
   //listTest();
-  testDflOp();
+  //testDflOp();
+  lambdaTest("Test");
   puts("Press any key to exit...");
   (void)getchar();
   return 0;
