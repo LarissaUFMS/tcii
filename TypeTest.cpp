@@ -26,7 +26,7 @@ primitiveTypeTest()
   psize<long long>("long long");
   psize<int>("int");
   psize<short>("short");
-  psize<wchar_t>("wchar_t");
+  //psize<wchar_t>("wchar_t");
 
   bool b = true;
   char c = 'c';
@@ -59,7 +59,7 @@ primitiveTypeTest()
   psize(ull);
   psize(ui);
   psize(us);
-  psize(wc);
+  //psize(wc);
 }
 
 void

@@ -1,35 +1,34 @@
 #include "String.h"
 
-String::String(const char* const s)
+void
+String::copy(const char const* s, size_t size)
 {
-  if ((_size = strlen(s)) > 0)
+  if ((_size = size) > 0)
   {
-    _data = new char[_size + 1];
+    if (isShort())
+      _data = _buffer;
+    else
+    {
+      _capacity = (_size / MAX_BUFFER + 1) * MAX_BUFFER;
+      _data = new char[_capacity + 1];
+    }
     strcpy(_data, s);
   }
 }
 
-String::String(const String& other)
+void
+String::move(String& other) noexcept
 {
-  if ((_size = other._size) > 0)
+  _size = other._size;
+  if (isShort())
   {
-    _data = new char[_size + 1];
+    _data = _buffer;
     strcpy(_data, other._data);
   }
-}
-
-String&
-String::operator =(const String& other)
-{
-  if (&other != this)
+  else
   {
-    if (_size != other._size)
-    {
-      delete[]_data;
-      _data = (_size = other._size) > 0 ? new char[_size + 1] : nullptr;
-    }
-    if (_data)
-      strcpy(_data, other._data);
+    _capacity = other._capacity;
+    _data = other._data;
   }
-  return *this;
+  other._size = 0;
 }

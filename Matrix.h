@@ -6,10 +6,20 @@
 namespace math
 { // begin namespace math
 
-inline auto
-matrixIndexOutOfRange()
+enum class IndexType
 {
-  util::error<std::logic_error>("Matrix index out of range");
+  Row,
+  Col
+};
+
+auto
+matrixIndexOutOfRange(IndexType it, int i, int n)
+{
+  util::error<std::logic_error>(
+    "Matrix index out of range: %s %d not in [0,%d)",
+    it == IndexType::Row ? "row" : "column",
+    i,
+    n);
 }
 
 class Matrix
@@ -53,18 +63,20 @@ public:
     return _n;
   }
 
-  auto operator ()(int i, int j) const
+  auto& operator ()(int i, int j)
   {
-    if (i < 0 || i >= _m || j < 0 || j >= _n)
-      matrixIndexOutOfRange();
+#ifdef _DEBUG
+    if (i < 0 || i >= _m)
+      matrixIndexOutOfRange(IndexType::Row, i, _m);
+    if (j < 0 || j >= _n)
+      matrixIndexOutOfRange(IndexType::Col, j, _n);
+#endif
     return _data[i * _n + j];
   }
 
-  auto& operator ()(int i, int j)
+  auto operator ()(int i, int j) const
   {
-    if (i < 0 || i >= _m || j < 0 || j >= _n)
-      matrixIndexOutOfRange();
-    return _data[i * _n + j];
+    return const_cast<Matrix*>(this)->operator ()(i, j);
   }
 
   Matrix& operator =(const Matrix&);

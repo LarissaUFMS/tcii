@@ -1,6 +1,7 @@
 #include "DflOp.h"
 #include "FunctionTemplate.h"
 #include "LinkedList.h"
+#include "BLAS.h"
 
 void typeTest();
 void vectorTest();
@@ -66,6 +67,7 @@ main() try
   //ftTest();
   //listTest();
   testDflOp();
+  math::testBLAS();
   puts("Press any key to exit...");
   (void)getchar();
   return 0;

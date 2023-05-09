@@ -17,12 +17,12 @@ template <typename T> class LinkedListIterator;
 template <typename T>
 class LinkedListNode
 {
-private:
+protected:
   LinkedListNode<T>* _next{};
   T _value;
 
-  LinkedListNode(const T& value) :
-    _value{ value }
+  LinkedListNode(const T& value):
+    _value{value}
   {
     // do nothing
   }
