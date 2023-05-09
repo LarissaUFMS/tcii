@@ -57,7 +57,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,6 +84,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="ex1.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix.cpp" />
@@ -96,18 +97,23 @@
     <ClCompile Include="TypeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BLAS.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="FunctionTemplate.h" />
     <ClInclude Include="DflOp.h" />
+    <ClInclude Include="IntArray.h" />
+    <ClInclude Include="IntCollection.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Point2.h" />
     <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="RefTest.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="ShapeList.h" />
     <ClInclude Include="SharedObject.h" />
     <ClInclude Include="String.h" />
+    <ClInclude Include="sum.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="FloatVector.h" />
     <ClInclude Include="Vector.h" />
