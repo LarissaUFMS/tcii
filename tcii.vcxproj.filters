@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\math">
+      <UniqueIdentifier>{538fd7de-7626-48d7-ad6d-8df7cdc8ee43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{a27d23e3-6c4b-4f27-a581-dba2fac67001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\geo">
+      <UniqueIdentifier>{609cd03c-2fa9-44ac-86cc-18d5a7fa4d48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\geo">
+      <UniqueIdentifier>{b743db05-1184-4799-a23c-54a81e238b08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{7e7edaea-64ba-46bc-851a-2eda6300e395}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{d6549051-1418-4807-8e10-09b78b9a9204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Files">
+      <UniqueIdentifier>{ef9354b8-6fd8-49c0-a3bf-6430ba97f2f6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Exception.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geo\Circle.cpp">
+      <Filter>Source Files\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geo\Rectangle.cpp">
+      <Filter>Source Files\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geo\ShapeList.cpp">
+      <Filter>Source Files\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\ShapeTest.h">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\util\Exception.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\LinkedList.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\SharedObject.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\Allocator.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geo\Circle.h">
+      <Filter>Header Files\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geo\Point2.h">
+      <Filter>Header Files\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geo\Rectangle.h">
+      <Filter>Header Files\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geo\Shape.h">
+      <Filter>Header Files\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geo\ShapeList.h">
+      <Filter>Header Files\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\DflOpTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\RefTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\FuncTemplateTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\LambdaTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\ListTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\TypeTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Vector.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\MatrixTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Matrix.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\BLASTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
