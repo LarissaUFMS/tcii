@@ -145,7 +145,7 @@ private:
 
           _writer.write(name.c_str());
           _writer.write("=\n");
-          _globals.find(name)->value.write(_writer);
+          _globals.findRecord(name)->value.write(_writer);
           _writer.endLine();
         }
       }

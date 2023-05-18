@@ -42,8 +42,6 @@ objectPtrListTest()
     list.add(new S{i});
   for (auto s : list)
     test::printInt(s->id);
-  // Test question:
-  // list is destroyed but S dtor is never invoked. Why?
 }
 
 inline void

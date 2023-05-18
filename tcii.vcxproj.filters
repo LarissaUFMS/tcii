@@ -103,14 +103,14 @@
     <ClInclude Include="tests\BLASTest.h">
       <Filter>Test Files</Filter>
     </ClInclude>
-    <ClInclude Include="tests\ShapeTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\math\BLAS.h">
       <Filter>Header Files\math</Filter>
     </ClInclude>
     <ClInclude Include="include\util\ObjectPtrList.h">
       <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\ShapeTest.h">
+      <Filter>Test Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
