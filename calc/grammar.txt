@@ -1,0 +1,58 @@
+Command:
+  Assignment
+| ExpressionStatement
+| CLEAR IdentifierList?
+| LIST IDENTIFIER?
+| EXIT
+
+Assignment:
+  ("[" ReferenceList "]" | Reference) "=" Expression
+
+ReferenceList:
+  Reference ("," Reference)*
+
+Reference:
+  IDENTIFIER ("(" ArgumentList? ")")?
+
+ArgumentList:
+  (":" | Expression) ("," (":" | Expression))*
+
+ExpressionStatement:
+  ExpressionList
+
+ExpressionList:
+  Expression ("," Expression)*
+
+IdentifierList:
+  IDENTIFIER ("," IDENTIFIER)*
+
+Expression:
+  ColonExpression
+
+ColonExpression:
+  AdditiveExpression (":" AdditiveExpression)*
+
+AdditiveExpression:
+  MultiplicativeExpression (("+" | "-") MultiplicativeExpression)*
+
+MultiplicativeExpression:
+  UnaryExpression (("*" | "/" | "\") UnaryExpression)*
+
+UnaryExpression:
+  ("+" | "-")* Transpose
+
+Transpose:
+  PrimaryExpression "'"*
+
+PrimaryExpression:
+  "(" Expression ")"
+| SIZE "(" Expression ")"
+| TYPE_NAME "(" Expression ")"
+| Reference
+| INTEGER
+| REAL
+| Matrix
+
+Matrix:
+  "[" ExpressionList (";" ExpressionList)* "]"
+| "[" "]"

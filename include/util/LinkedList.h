@@ -101,6 +101,8 @@ template <typename T>
 class LinkedList
 {
 public:
+  using Iterator = LinkedListIterator<T>;
+
   ~LinkedList()
   {
     clear();
@@ -116,16 +118,21 @@ public:
   void add(const T&);
   void clear();
 
+  auto empty() const
+  {
+    return _size == 0;
+  }
+
   void iterate(IterFunc<T> func) const;
 
   auto begin() const
   {
-    return LinkedListIterator<T>{this, _head};
+    return Iterator{this, _head};
   }
 
   auto end() const
   {
-    return LinkedListIterator<T>{this, nullptr};
+    return Iterator{this, nullptr};
   }
 
 private:

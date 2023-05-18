@@ -41,7 +41,9 @@ public:
     _usedMemory += typeInfo.size;
     _memoryMap[ptr] = typeInfo;
 #ifdef _DEBUG
+#ifdef _DEBUG_ALLOCATOR
     printf("**Allocating %s (%llu B)\n", typeInfo.name, typeInfo.size);
+#endif // _DEBUG_ALLOCATOR
 #endif // _DEBUG
     return ptr;
   }
@@ -53,7 +55,9 @@ public:
     {
       _usedMemory -= e->second.size;
 #ifdef _DEBUG
+#ifdef _DEBUG_ALLOCATOR
       printf("**Freeing %s (%llu B)\n", e->second.name, e->second.size);
+#endif // _DEBUG_ALLOCATOR
 #endif // _DEBUG
       _memoryMap.erase(e);
       delete ptr;

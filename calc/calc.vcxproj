@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{fc9ab339-efd4-41fa-b0ee-be2eeea46a8e}</ProjectGuid>
+    <RootNamespace>calc</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>calc</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.;./include;../include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.;./include;../include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AST\Assignment.h" />
+    <ClInclude Include="include\AST\AST.h" />
+    <ClInclude Include="include\AST\BinaryExpression.h" />
+    <ClInclude Include="include\ast\CastExpression.h" />
+    <ClInclude Include="include\AST\ColonAtom.h" />
+    <ClInclude Include="include\AST\ColonExpression.h" />
+    <ClInclude Include="include\ast\Declaration.h" />
+    <ClInclude Include="include\AST\Expression.h" />
+    <ClInclude Include="include\AST\ExpressionList.h" />
+    <ClInclude Include="include\AST\ExpressionStatement.h" />
+    <ClInclude Include="include\ast\ExpressionValue.h" />
+    <ClInclude Include="include\AST\FloatLiteral.h" />
+    <ClInclude Include="include\ast\FunctionDeclaration.h" />
+    <ClInclude Include="include\AST\IntLiteral.h" />
+    <ClInclude Include="include\AST\MatrixExpression.h" />
+    <ClInclude Include="include\AST\ASTNode.h" />
+    <ClInclude Include="include\AST\Reference.h" />
+    <ClInclude Include="include\AST\SizeExpression.h" />
+    <ClInclude Include="include\AST\Statement.h" />
+    <ClInclude Include="include\AST\Transpose.h" />
+    <ClInclude Include="include\ast\TypeReference.h" />
+    <ClInclude Include="include\AST\UnaryExpression.h" />
+    <ClInclude Include="include\Calc.h" />
+    <ClInclude Include="include\Frame.h" />
+    <ClInclude Include="include\parser\InputBuffer.h" />
+    <ClInclude Include="include\parser\ErrorHandler.h" />
+    <ClInclude Include="include\parser\Parser.h" />
+    <ClInclude Include="include\parser\StringBuffer.h" />
+    <ClInclude Include="include\parser\Token.h" />
+    <ClInclude Include="include\ProblemReporter.h" />
+    <ClInclude Include="include\symbol\Function.h" />
+    <ClInclude Include="include\symbol\GlobalScope.h" />
+    <ClInclude Include="include\symbol\Scope.h" />
+    <ClInclude Include="include\symbol\Symbol.h" />
+    <ClInclude Include="include\symbol\SymbolMap.h" />
+    <ClInclude Include="include\symbol\Type.h" />
+    <ClInclude Include="include\symbol\Variable.h" />
+    <ClInclude Include="include\Writer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ast\Assignment.cpp" />
+    <ClCompile Include="src\ast\BinaryExpression.cpp" />
+    <ClCompile Include="src\ast\CastExpression.cpp" />
+    <ClCompile Include="src\ast\ColonAtom.cpp" />
+    <ClCompile Include="src\ast\ColonExpression.cpp" />
+    <ClCompile Include="src\ast\Expression.cpp" />
+    <ClCompile Include="src\ast\ExpressionStatement.cpp" />
+    <ClCompile Include="src\ast\FloatLiteral.cpp" />
+    <ClCompile Include="src\ast\FunctionDeclaration.cpp" />
+    <ClCompile Include="src\ast\IntLiteral.cpp" />
+    <ClCompile Include="src\ast\MatrixExpression.cpp" />
+    <ClCompile Include="src\ast\Reference.cpp" />
+    <ClCompile Include="src\ast\SizeExpression.cpp" />
+    <ClCompile Include="src\ast\Transpose.cpp" />
+    <ClCompile Include="src\ast\UnaryExpression.cpp" />
+    <ClCompile Include="src\Frame.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\parser\ErrorHandler.cpp" />
+    <ClCompile Include="src\parser\Parser.cpp" />
+    <ClCompile Include="src\ProblemReporter.cpp" />
+    <ClCompile Include="src\symbol\GlobalScope.cpp" />
+    <ClCompile Include="src\symbol\Scope.cpp" />
+    <ClCompile Include="src\symbol\Symbol.cpp" />
+    <ClCompile Include="src\Writer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="grammar.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

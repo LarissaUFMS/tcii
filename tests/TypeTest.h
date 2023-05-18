@@ -138,14 +138,14 @@ using uint = unsigned;
 inline void
 f(int a[10])
 {
-  puts("int [10] decays to int*:");
+  puts("int[10] decays to int*:");
   printTypeInfo(a);
 }
 
 inline void
 f(int a[][2])
 {
-  puts("int [][2] decays to int*[2]:");
+  puts("int[][2] decays to int(*)[2]:");
   printTypeInfo(a);
 }
 
@@ -168,7 +168,7 @@ arrayTest()
   using IA2x3 = int[2][3];
 
   IA2x3 ia2x3_1;
-  auto q = ia2x3_1; // decays to int*[3]
+  auto q = ia2x3_1; // decays to int(*)[3]
 
   *q[0] = 1; // (q[0][0] = 1) == (ia2x3_1[0][0] = 1)
 

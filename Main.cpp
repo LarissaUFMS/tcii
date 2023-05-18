@@ -1,3 +1,5 @@
+#define _DEBUG_ALLOCATOR
+
 #include "tests/BLASTest.h"
 #include "tests/DflOpTest.h"
 #include "tests/FuncTemplateTest.h"
@@ -30,6 +32,7 @@ main()
       "Class templates", '6', []()
       {
         puts("\n**CLASS TEMPLATES");
+        objectPtrListTest();
         listTest();
       }
     },

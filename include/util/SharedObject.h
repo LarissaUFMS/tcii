@@ -30,6 +30,8 @@ destroy(T* ptr)
 class SharedObject
 {
 public:
+  virtual ~SharedObject() = default;
+
   auto useCount() const
   {
     return _useCount;
