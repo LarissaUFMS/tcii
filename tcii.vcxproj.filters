@@ -112,5 +112,8 @@
     <ClInclude Include="tests\ShapeTest.h">
       <Filter>Test Files</Filter>
     </ClInclude>
+    <ClInclude Include="tests\VariadicTest.h">
+      <Filter>Test Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

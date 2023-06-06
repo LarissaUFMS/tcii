@@ -114,6 +114,7 @@
     <ClInclude Include="tests\RefTest.h" />
     <ClInclude Include="tests\ShapeTest.h" />
     <ClInclude Include="tests\TypeTest.h" />
+    <ClInclude Include="tests\VariadicTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

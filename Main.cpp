@@ -9,6 +9,7 @@
 #include "tests/RefTest.h"
 #include "tests/ShapeTest.h"
 #include "tests/TypeTest.h"
+#include "tests/VariadicTest.h"
 
 int
 main()
@@ -44,7 +45,7 @@ main()
         vectorTest();
       }
     },
-    {"Variadic templates", '8', nullptr},
+    {"Variadic templates", '8', variadicTest},
     {"Lambda/Fold expression", '9', lambdaTest},
     {"Concepts test", 'c', blasTest}
   };
