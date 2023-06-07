@@ -146,5 +146,9 @@ variadicTest()
   cout << boolalpha << pairComp(pi, float(3), 3, 4) << '\n';
 
   test::tuple<float, const char*, int> t{pi, "C++", 3};
-  cout << test::get<2>(t);
+
+  test::get<1>(t) = "C++20";
+  cout << test::get<0>(t) << '\n';
+  cout << test::get<1>(t) << '\n';
+  cout << test::get<2>(t) << '\n';
 }

@@ -1,0 +1,125 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath,amsfonts,bezier,amstext,amsthm,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{bold-extra}
+\usepackage{array}
+
+\geometry{top=15mm,bottom=17mm,left=30mm,right=25mm}
+\setlength{\parskip}{1ex}
+\setlength{\parindent}{1.2cm}
+
+\definecolor{myblue}{HTML}{0066cc}
+\definecolor{mygreen}{HTML}{009926}
+\definecolor{myorange}{HTML}{ff8000}
+
+\newcommand{\kw}[1]{{\color{myblue}\texttt{\textbf{#1}}}}
+\newcommand{\sym}[1]{{\color{mygreen}\texttt{#1}}}
+\newcommand{\hfile}[1]{{\color{myorange}\texttt{#1.h}}}
+\newcommand{\cfile}[1]{{\color{myorange}\texttt{#1.cpp}}}
+\newcommand{\R}[1]{\ensuremath{\mathbb{R}^{#1}}}
+\newcommand{\E}[1]{\ensuremath{\mathbb{E}^{#1}}}
+\newcommand{\point}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\pv}[1]{\ensuremath{\overrightarrow{\point{#1}}}}
+
+\begin{document}
+
+\pagestyle{empty}
+
+\begin{center}
+  Universidade Federal de Mato Grosso do Sul \\
+  Faculdade de Computação \\[1em]
+  {\bf\large TÓPICOS EM COMPUTAÇÃO II 2022} \\
+  Paulo A. Pagliosa \\[1em]
+  {\bf Prova Substitutiva} \\
+  07/07/2022
+\end{center}
+
+\vspace{5mm}
+\noindent
+Responda as questões abaixo em um arquivo texto com extensão \texttt{.txt}, identificado com seu nome. Codifique a questão de implementação em um arquivo chamado \hfile{myprintf}, contendo comentários com seu nome. Escreva o restante de código em um arquivo com extensão \texttt{.cpp}, identificado com seu nome. Compacte todos os arquivos em um arquivo \texttt{.zip}, identificado com seu nome, e o submeta via AVA.
+
+\vspace{5mm}
+\noindent
+{\bf QUESTÃO DE PROGRAMAÇÃO (3.5)}
+
+\noindent
+Escreva código para que o \kw{template}\ de função\\[1.5ex]
+\texttt{\kw{template}\ <\kw{typename}... \sym{Args}>}\\
+\texttt{\kw{void}\ myprintf(\kw{const char}* format, \sym{Args}\&\&... args);}\\[1.5ex]
+instancie uma função \texttt{myprintf} para escrita na saída padrão que seja``segura''. O parâmetro \texttt{format} é uma cadeia de caracteres (exceto \texttt{\%}) que são copiados na saída padrão (por simplicidade,  não são considerados caracteres de controle tais como \texttt{\textbackslash{n}}). Quando um \texttt{\%} é encontrado, este deve ser seguido por um caractere \emph{especificador de conversão}. Se não houver caractere após \texttt{\%}, então a cadeia de formato está mal formada e uma exceção deve ser lançada. Se o especificador de conversão for \texttt{\%}, então \texttt{\%} é copiado para a saída padrão. Para qualquer outro especificador de conversão espera-se um argumento em \texttt{args} de um tipo válido para o especificador. Se não houver um argumento para um especificador de conversão, ou se o argumento for de um tipo inválido, ou se o especificador de conversão for inválido, uma exceção deve ser lançada. Os especificadores de conversão válidos são:
+\begin{center}
+\begin{tabular}{|c|m{0.3\textwidth}|}
+\hline
+Caractere & \multicolumn{1}{c|}{Tipos esperados}\\
+\hline
+\texttt{c} & \kw{char}\\
+\hline
+\texttt{s} & \kw{const char*}\newline\kw{const}\texttt{ std::\sym{string}\&}\\
+\hline
+\texttt{d}\ & \kw{int}\newline\kw{long}\newline\kw{short}\\
+\hline
+\texttt{u}\ & \kw{unsigned int}\newline\kw{unsigned long}\newline\kw{unsigned short}\\
+\hline
+\texttt{f}\ & \kw{float}\newline\kw{double}\\
+\hline
+\texttt{b}\ & \kw{bool}\\
+\hline
+\end{tabular}
+\end{center}
+Ao final, \texttt{\textbackslash{n}} é copiado na saída padrão. Escreva uma função de testes para seu \kw{template} (com tratamento de exceções).
+
+\vspace{5mm}
+\noindent
+{\bf QUESTÃO 1 (2.5)}
+
+\noindent
+Descreva quais são os (seis) métodos definidos implicitamente pelo compilador para uma classe \sym{X}, quando são gerados e qual a funcionalidade \kw{default}\ de cada um.
+
+\vspace{5mm}
+\noindent
+{\bf QUESTÃO 2 (1.0)}
+
+\noindent
+Quais as funcionalidades e diferenças de \texttt{std::move} e \texttt{std::forward}?
+
+\vspace{5mm}
+\noindent
+{\bf QUESTÃO 3 (2.0)}
+
+\noindent
+Considere o seguinte código:\\[1.5ex]
+\texttt{\kw{template}\ <\kw{typename}... \sym{Args}>}\\
+\texttt{\kw{void}\ log(std::\sym{ostream}\& os, \sym{Args}\&\&... args)}\\
+\texttt{\{}\\
+\hspace*{1em}\texttt{(os << ... << std::forward<\sym{Args}>(args)) << '\textbackslash{n}';}\\
+\texttt{\}}\\[1.5ex]
+\texttt{\kw{using}\ \sym{strings} = std::\sym{vector}<std::\sym{string}>;}\\
+\texttt{\kw{using}\ \sym{logfunc} = std::\sym{function}<\kw{void}(\kw{const}\ \sym{strings}\&)>;}\\[1.5ex]
+\texttt{\kw{inline void}\ logText(\sym{logfunc}\ f) \{ f(\{"UFMS", "FACOM", "TCCII-2022"\}); \}}\\[1.5ex]
+\texttt{\kw{inline void}\ testLog(std::\sym{ostream}\& os = std::cout)}\\
+\texttt{\{}\\
+\hspace*{1em}\texttt{logText([\&os](\kw{const}\ \sym{strings}\& s)}\\
+\hspace*{2em}\texttt{\{}\\
+\hspace*{3em}\texttt{\kw{for}\ (\sym{size\_t} n = s.size(), i = 0; i < n; ++i)}\\
+\hspace*{4em}\texttt{log(os, i + 1, ':', s[i]);}\\
+\hspace*{2em}\texttt{\});}\\
+\texttt{\}}\\[1.5ex]
+Reescreva a função \texttt{testLog} usando um \emph{functor} no lugar da expressão lambda.
+
+\vspace{5mm}
+\noindent
+{\bf QUESTÃO 4 (1.0)}
+
+\noindent
+Explique a diferença entre \kw{struct}s e \kw{union}s.
+
+\vspace{1cm}
+\centerline{\bf Boa prova!}
+
+\end{document}
