@@ -28,7 +28,7 @@
 // Class definition for assignment expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 18/05/2023
+// Last revision: 09/06/2023
 
 #include "ast/Assignment.h"
 #include "Frame.h"
@@ -57,20 +57,68 @@ Assignment::resolve(Scope* scope)
       rs = function->output().size();
   if (_lhs.size() > rs)
     problemReporter.tooManyOutputArguments(scope, _expression);
-  for (auto r : _lhs)
-  {
-    scope->buildVariable(r->name());
-    r->resolve(scope);
-  }
 }
 
 //
 // Auxiliary function
 //
-inline auto
+inline auto&
 value(Frame* frame, const Variable* v)
 {
   return frame->findRecord(v->name())->value;
+}
+
+void
+Assignment::setValue(Frame* frame, Reference* r, const Expression::Value& rv)
+//[]----------------------------------------------------[]
+//|  Set value                                           |
+//[]----------------------------------------------------[]
+{
+  auto& varName = r->name();
+  auto var = frame->findRecord(varName);
+
+  if (nullptr == var)
+  {
+    frame->buildVariable(varName);
+    r->resolve(frame->scope());
+    var = frame->findRecord(varName);
+    assert(var != nullptr);
+  }
+  try
+  {
+    [&]()
+    {
+      auto& lv = var->value;
+      const auto& args = r->arguments();
+
+      if (auto nargs = args.size())
+      {
+        auto a = args.begin();
+        auto i = r->evalIndex(frame, *a);
+
+        if (nargs == 1)
+          return i.colon ? lv.setVector(rv) : lv.set(i.value, rv);
+        ++a;
+
+        auto j = r->evalIndex(frame, *a);
+
+        if (!i.colon)
+          return j.colon ?
+            lv.setRows(i.value, rv) :
+            lv.set(i.value, j.value, rv);
+        if (!j.colon)
+          return lv.setCols(j.value, rv);
+      }
+      lv = rv;
+    }();
+  }
+  catch (...)
+  {
+    if (!var->initialized)
+      frame->removeVariable(varName);
+    throw;
+  }
+  var->initialized = true;
 }
 
 Statement::JumpCode
@@ -79,7 +127,7 @@ Assignment::execute(Frame* frame) const
 //|  Execute                                             |
 //[]----------------------------------------------------[]
 {
-  // TODO
+  setValue(frame, *_lhs.begin(), _expression->eval(frame));
   return NEXT;
 }
 

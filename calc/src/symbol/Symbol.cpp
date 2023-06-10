@@ -28,7 +28,7 @@
 // Source file for generic symbol.
 //
 // Author: Paulo Pagliosa
-// Last revision: 17/05/2023
+// Last revision: 07/06/2023
 
 #include "symbol/symbol.h"
 #include "Writer.h"
@@ -43,8 +43,11 @@ namespace calc::symbol
 // ======
 void
 Symbol::write(Writer& writer) const
+//[]----------------------------------------------------[]
+//|  Write                                               |
+//[]----------------------------------------------------[]
 {
-  writer.write("%s\n", _name.c_str());
+  writer.write("%s\n", name());
 }
 
 } // end namespace calc::symbol

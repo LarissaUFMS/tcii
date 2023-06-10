@@ -105,9 +105,9 @@ private:
       }
       matchEof();
       if (name.length() == 0)
-        _globals.Scope::write(_writer);
-      else if (auto v = _globals.lookupVariable(name))
-        v->write(_writer);
+        _globals.Frame::write(_writer);
+      else if (auto r = _globals.findRecord(name))
+        r->write(_writer);
     }
     else if (_token->type == T_CLEAR)
     {

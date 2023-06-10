@@ -28,7 +28,7 @@
 // Class definition for generic expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 17/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __Expression_h
 #define __Expression_h
@@ -81,7 +81,7 @@ protected:
   }
 
 private:
-  util::ObjectPtr<Type> _resolvedType;
+  TypePtr _resolvedType = Type::Variant();
 
   friend class Value;
 

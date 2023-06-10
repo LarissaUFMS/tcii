@@ -28,7 +28,7 @@
 // Source for colon expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 09/06/2023
 
 #include "ast/ColonExpression.h"
 
@@ -46,12 +46,9 @@ ColonExpression::resolve(Scope* scope)
 //|  Resolve                                             |
 //[]----------------------------------------------------[]
 {
-  auto t1 = _e1->resolveVoid(scope);
-  auto t3 = _e3->resolveVoid(scope);
-  auto t2 = _e2->resolveVoid(scope);
-
-  setResolvedType(t3 == Type::Float() ? t3 :
-    t1 == t2 ? t1 : Type::Float());
+  _e1->resolveVoid(scope);
+  _e3->resolveVoid(scope);
+  _e2->resolveVoid(scope);
 }
 
 Expression::Value
@@ -64,7 +61,7 @@ ColonExpression::eval(Frame* frame) const
   auto v3 = _e3->eval(frame);
   auto v2 = _e2->eval(frame);
 
-  return Value::range(v1, v2, v3);
+  return Value::colon(v1, v2, v3);
 }
 
 } // end namespace calc::ast

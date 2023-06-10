@@ -28,7 +28,7 @@
 // Class definition for transpose.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __Transpose_h
 #define __Transpose_h
@@ -46,7 +46,6 @@ namespace calc::ast
 class Transpose: public Expression
 {
 public:
-  // Constructor
   Transpose(Expression* expression):
     _expression{expression}
   {

@@ -28,7 +28,7 @@
 // Class definition for assignment statement.
 //
 // Author: Paulo Pagliosa
-// Last revision: 18/05/2023
+// Last revision: 09/06/2023
 
 #ifndef __Assignment_h
 #define __Assignment_h
@@ -77,10 +77,12 @@ public:
   void resolve(Scope*) override;
   JumpCode execute(Frame*) const override;
 
-protected:
+private:
   ReferenceList _lhs;
   ExpressionPtr _expression;
   Reference* _reference;
+
+  static void setValue(Frame*, Reference*, const Expression::Value&);
 
 }; // Assignment
 

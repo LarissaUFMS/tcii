@@ -28,7 +28,7 @@
 // Class definition for generic reference.
 //
 // Author: Paulo Pagliosa
-// Last revision: 18/05/2023
+// Last revision: 09/06/2023
 
 #ifndef __Reference_h
 #define __Reference_h
@@ -81,9 +81,17 @@ public:
   Value eval(Frame*) const override;
 
 private:
+  struct Index
+  {
+    bool colon;
+    Expression::Value value;
+  };
+
   String _name;
   ExpressionList _arguments;
   Place _place;
+
+  static Index evalIndex(Frame*, Expression*);
 
   friend Assignment;
 

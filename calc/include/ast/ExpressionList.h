@@ -28,7 +28,7 @@
 // Class definition for expression list.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __ExpressionList_h
 #define __ExpressionList_h
@@ -48,15 +48,9 @@ class ExpressionList: public List<Expression>
 public:
   auto resolveVoid(Scope* scope)
   {
-    auto type = Type::Int();
-
     for (auto e : *this)
-    {
       e->resolveVoid(scope);
-      if (e->resolvedType() == Type::Float())
-        type = Type::Float();
-    }
-    return type;
+    return Type::Variant();
   }
 
 }; // ExpressionList

@@ -1,3 +1,5 @@
+//#include "MatTest.h"
+#include "MyExpressionValue.h"
 #include "Calc.h"
 
 //
@@ -19,6 +21,11 @@ readLine(const char* prompt)
 int
 main()
 {
+  /*
+  calc::matTest();
+  (void)getchar();
+  return 0;
+  */
   puts("Simple Matrix Calculator Copyright(c), 2023. FACOM-UFMS, TCII guys");
   for (calc::Calc calc;;)
   {

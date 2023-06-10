@@ -28,7 +28,7 @@
 // Class definition for size expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __SizeExpression_h
 #define __SizeExpression_h
@@ -46,7 +46,6 @@ namespace calc::ast
 class SizeExpression: public Expression
 {
 public:
-  // Constructor
   SizeExpression(Expression* expression):
     _expression{expression}
   {

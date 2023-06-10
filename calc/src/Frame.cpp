@@ -28,9 +28,10 @@
 // Source file for execution frame.
 //
 // Author: Paulo Pagliosa
-// Last revision: 17/05/2023
+// Last revision: 09/06/2023
 
 #include "Frame.h"
+#include "Writer.h"
 
 namespace calc
 { // begin namespace calc
@@ -38,8 +39,31 @@ namespace calc
 
 /////////////////////////////////////////////////////////////////////
 //
+// FrameRecord implementation
+// ===========
+void
+FrameRecord::write(Writer& writer) const
+//[]----------------------------------------------------[]
+//|  Write                                               |
+//[]----------------------------------------------------[]
+{
+  writer.write("%s %s\n", name(), value.type()->name());
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//
 // Frame implementation
 // =====
+void
+Frame::buildVariable(const String& name)
+//[]----------------------------------------------------[]
+//|  Build variable                                      |
+//[]----------------------------------------------------[]
+{
+  _scope->buildVariable(name);
+}
+
 FrameRecord*
 Frame::findRecord(const String& name) const
 //[]----------------------------------------------------[]
@@ -51,14 +75,13 @@ Frame::findRecord(const String& name) const
 }
 
 void
-Frame::build(const Scope* scope)
+Frame::build()
 //[]----------------------------------------------------[]
 //|  Build                                               |
 //[]----------------------------------------------------[]
 {
-  if (scope != nullptr)
-    for (auto& [name, v] : scope->_variables)
-      add(new FrameRecord{name});
+  for (auto& [name, v] : _scope->_variables)
+    add(new FrameRecord{name});
 }
 
 } // end namespace calc

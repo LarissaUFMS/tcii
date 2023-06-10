@@ -28,7 +28,7 @@
 // Source file for binary expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #include "ast/BinaryExpression.h"
 
@@ -46,10 +46,8 @@ BinaryExpression::resolve(Scope* scope)
 //|  Resolve                                             |
 //[]----------------------------------------------------[]
 {
-  auto t1 = _e1->resolveVoid(scope);
-  auto t2 = _e2->resolveVoid(scope);
-
-  setResolvedType(t1 == t2 ? t1 : Type::Float());
+  _e1->resolveVoid(scope);
+  _e2->resolveVoid(scope);
 }
 
 Expression::Value

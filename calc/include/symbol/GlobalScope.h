@@ -28,7 +28,7 @@
 // Class definition for global scope.
 //
 // Author: Paulo Pagliosa
-// Last revision: 17/05/2023
+// Last revision: 09/06/2023
 
 #ifndef __GlobalScope_h
 #define __GlobalScope_h
@@ -47,19 +47,14 @@ class GlobalScope: public Scope, public Frame
 {
 public:
   GlobalScope():
-    Frame{nullptr, nullptr}
+    Frame{this}
   {
     // do nothing
   }
 
   void clear()
   {
-    _variables.clear();
-  }
-
-  auto removeVariable(const String& name)
-  {
-    return _variables.remove(name) && Frame::remove(name);
+    _variables.clear(), Frame::clear();
   }
 
 private:

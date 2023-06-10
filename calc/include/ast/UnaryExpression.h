@@ -28,7 +28,7 @@
 // Class definition for unary expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __UnaryExpression_h
 #define __UnaryExpression_h
@@ -46,7 +46,6 @@ namespace calc::ast
 class UnaryExpression: public Expression
 {
 public:
-  // Constructor
   UnaryExpression(Expression* expression, int op):
     _expression{expression},
     _op{op}

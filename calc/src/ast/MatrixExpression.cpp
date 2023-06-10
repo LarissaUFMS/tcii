@@ -28,7 +28,7 @@
 // Sourrce file for matrix expression.
 //
 // Author: Paulo Pagliosa
-// Last revision: 15/05/2023
+// Last revision: 07/06/2023
 
 #include "ast/MatrixExpression.h"
 
@@ -73,15 +73,8 @@ MatrixExpression::resolve(Scope* scope)
 //|  Resolve                                             |
 //[]----------------------------------------------------[]
 {
-  auto type = Type::Int();
-
   for (auto r : _rows)
-  {
     r->resolve(scope);
-    if (r->resolvedType() == Type::Float())
-      type = Type::Float();
-  }
-  setResolvedType(type);
 }
 
 Expression::Value

@@ -2,14 +2,15 @@
 #define __ExpressionValue_h
 
 #include "ast/Expression.h"
+#include "Matrix.h"
+#include <variant>
 
 namespace calc
 { // begin namespace calc
 
 //
-// Forward definitions
+// Forward definition
 //
-namespace symbol { class Type; }
 class Writer;
 
 namespace ast
@@ -23,91 +24,66 @@ namespace ast
 class Expression::Value
 {
 public:
-  Value()
+  Value();
+  Value(int);
+  Value(float);
+
+  Type* type() const
   {
-    // TODO
+    return _type;
   }
 
-  Value(int)
+  Value castTo(const Type*) const;
+
+  Value operator +(const Value&) const;
+  Value operator -(const Value&) const;
+  Value operator *(const Value&) const;
+  Value operator /(const Value&) const;
+
+  Value operator -() const;
+
+  Value size() const;
+  Value transpose() const;
+
+  Value horzcat(const Value&) const;
+  Value vertcat(const Value&) const;
+
+  Value operator ()(const Value&) const;
+  Value operator ()(const Value&, const Value&) const;
+  Value rows(const Value&) const;
+  Value cols(const Value&) const;
+  Value vector() const;
+
+  void set(const Value&, const Value&);
+  void set(const Value&, const Value&, const Value&);
+  void setRows(const Value&, const Value&);
+  void setCols(const Value&, const Value&);
+  void setVector(const Value&);
+
+  void write(Writer&) const;
+
+  static Value colon(const Value&, const Value&, const Value&);
+
+private:
+  Type* _type;
+  std::variant<FloatMatrix, IntMatrix> _value;
+
+  template <typename T> Value(const Matrix<T>&);
+
+  Size valueSize() const;
+  template <typename T> Matrix<T> castTo() const;
+  Value block(const IntMatrix&, const IntMatrix&) const;
+  template <template <typename T> typename Op> Value bop(const Value&) const;
+
+  template <typename T> Matrix<T>& get();
+  void setBlock(const IntMatrix&, const IntMatrix&, const Value&);
+
+  template <typename T>
+  Matrix<T> get() const
   {
-    // TODO
+    return const_cast<Value*>(this)->get<T>();
   }
 
-  Value(float)
-  {
-    // TODO
-  }
-
-  Value castTo(const Type*) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value operator +(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value operator -(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value operator *(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value operator /(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value operator -() const
-  {
-    // TODO
-    return {};
-  }
-
-  Value size() const
-  {
-    // TODO
-    return {};
-  }
-
-  Value transpose() const
-  {
-    // TODO
-    return {};
-  }
-
-  Value horzcat(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  Value vertcat(const Value&) const
-  {
-    // TODO
-    return {};
-  }
-
-  static Value range(const Value&, const Value&, const Value&)
-  {
-    return {};
-  }
-
-  void write(Writer&) const
-  {
-    // TODO
-    printf("OK");
-  }
 
 }; // Expression::Value
 

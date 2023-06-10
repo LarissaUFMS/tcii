@@ -28,7 +28,7 @@
 // Class definition for execution frame.
 //
 // Author: Paulo Pagliosa
-// Last revision: 16/05/2023
+// Last revision: 09/06/2023
 
 #ifndef __Frame_h
 #define __Frame_h
@@ -48,28 +48,33 @@ class FrameRecord: public Symbol
 {
 public:
   ast::Expression::Value value;
+  bool initialized{};
 
   FrameRecord(const String& name):
-    Symbol{name},
-    value{float{}}
+    Symbol{name}
   {
     // do nothing
   }
 
+  void write(Writer&) const override;
+
 }; // FrameRecord
+
+using FrameRecordMap = symbol::SymbolMap<FrameRecord>;
 
 
 /////////////////////////////////////////////////////////////////////
 //
 // Frame: execution frame class
 // =====
-class Frame: public symbol::SymbolMap<FrameRecord>
+class Frame: protected FrameRecordMap
 {
 public:
-  Frame(Frame* parent, const Scope* scope):
+  Frame(Scope* scope, Frame* parent = nullptr):
+    _scope{scope},
     _parent{parent}
   {
-    build(scope);
+    // do nothing
   }
 
   auto parent() const
@@ -77,12 +82,27 @@ public:
     return _parent;
   }
 
+  auto* scope() const
+  {
+    return _scope;
+  }
+
   virtual FrameRecord* findRecord(const String&) const;
+
+  virtual void buildVariable(const String&);
+
+  auto removeVariable(const String& name)
+  {
+    return _scope->_variables.remove(name) && remove(name);
+  }
+ 
+  using FrameRecordMap::write;
 
 protected:
   Frame* _parent;
+  Scope* _scope;
 
-  void build(const Scope*);
+  void build();
 
 }; // Frame
 

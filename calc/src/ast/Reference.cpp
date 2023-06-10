@@ -28,7 +28,7 @@
 // Source file for reference.
 //
 // Author: Paulo Pagliosa
-// Last revision: 18/05/2023
+// Last revision: 09/06/2023
 
 #include "ast/ColonAtom.h"
 #include "Frame.h"
@@ -72,7 +72,19 @@ Reference::resolve(Scope* scope)
     problemReporter.undefinedVariableOrFunction(scope, this);
   else if (_arguments.size() > function->parameters().size())
     problemReporter.tooManyArguments(scope, this);
-  setResolvedType(Type::Variant());
+}
+
+Reference::Index
+Reference::evalIndex(Frame* frame, Expression* e)
+//[]----------------------------------------------------[]
+//|  Eval index                                          |
+//[]----------------------------------------------------[]
+{
+  Index i;
+
+  if (!(i.colon = isColonAtom(e)))
+    i.value = e->eval(frame);
+  return i;
 }
 
 Expression::Value
@@ -81,6 +93,28 @@ Reference::eval(Frame* frame) const
 //|  Eval                                                |
 //[]----------------------------------------------------[]
 {
+  if (variable != nullptr)
+  {
+    auto& v = frame->findRecord(_name)->value;
+
+    if (auto nargs = _arguments.size())
+    {
+      auto a = _arguments.begin();
+      auto i = evalIndex(frame, *a);
+
+      if (nargs == 1)
+        return i.colon ? v.vector() : v(i.value);
+      ++a;
+
+      auto j = evalIndex(frame, *a);
+
+      if (!i.colon)
+        return j.colon ? v.rows(i.value) : v(i.value, j.value);
+      if (!j.colon)
+        return v.cols(j.value);
+    }
+    return v;
+  }
   // TODO
   return Value{};
 }

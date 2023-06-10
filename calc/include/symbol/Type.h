@@ -28,7 +28,7 @@
 // Class definition for generic type.
 //
 // Author: Paulo Pagliosa
-// Last revision: 17/05/2023
+// Last revision: 07/06/2023
 
 #ifndef __Type_h
 #define __Type_h
@@ -84,6 +84,8 @@ isVoid(const Type* type)
 {
   return type == Type::Void();
 }
+
+using TypePtr = util::ObjectPtr<Type>;
 
 } // end namespace calc::symbol
 
