@@ -84,7 +84,6 @@ private:
     return const_cast<Value*>(this)->get<T>();
   }
 
-
 }; // Expression::Value
 
 } // end namespace ast
