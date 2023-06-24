@@ -143,6 +143,9 @@
     <ClInclude Include="include\ast\TypeReference.h">
       <Filter>Header Files\ast</Filter>
     </ClInclude>
+    <ClInclude Include="include\ast\Matrix.h">
+      <Filter>Header Files\ast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parser\ErrorHandler.cpp">
