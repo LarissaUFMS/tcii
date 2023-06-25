@@ -227,23 +227,58 @@ public:
 	  return temp;
   }
 
-  Value operator ()(const Value&) const;
-  Value operator ()(const Value&, const Value&) const;
+  //refazer métodos abaixo / ..................................................................//
+  Value operator ()(const Value&) const
+  {
+	  return *this;
+  }
+  Value operator ()(const Value&, const Value&) const
+  {
+	  return *this;
+  }
 
-  Value rows(const Value&) const;
-  Value cols(const Value&) const;
-  Value vector() const;
+  Value rows(const Value&) const
+  {
+	  return *this;
+  }
+  Value cols(const Value&) const
+  {
+	  return *this;
+  }
+  Value vector() const
+  {
+	  return *this;
+  }
+  void set(const Value&, const Value&)
+  {
+	  ;
+  }
+  void set(const Value&, const Value&, const Value&) 
+  {
+	  ;
+  }
+  void setRows(const Value&, const Value&)
+  {
+	  ;
+  }
+  void setCols(const Value&, const Value&)
+  {
+	  ;
+  }
+  void setVector(const Value&)
+  {
+	  ;
+  }
 
-  void set(const Value&, const Value&);
-  void set(const Value&, const Value&, const Value&);
-  void setRows(const Value&, const Value&);
-  void setCols(const Value&, const Value&);
-  void setVector(const Value&);
+  void write(Writer& w) const
+  {
+	  ;
+  }
 
-  void write(Writer& w) const;
-
-  static Value colon(const Value&, const Value&, const Value&);
-
+  static Value colon(const Value& a, const Value& b, const Value& c)
+  {
+	  return a;
+  }
 private:
   Type* _type;
   std::variant<FloatMatrix, IntMatrix> _value;
@@ -265,7 +300,7 @@ private:
 	  Tcurrent* dataCurrentPtr = tempCurrent.data();
 	  auto m = tempCurrent.rows();
 	  auto n = tempCurrent.cols();
-	  Tcast* dataCast{};
+	  Tcast* dataCast = new Tcast[m * n];
 	  for (size_t s = m * n, i{}; i < s; ++i)
 		  dataCast[i] = static_cast<Tcast>(dataCurrentPtr[i]);
 	  Matrix<Tcast> tempCast(m, n, dataCast);

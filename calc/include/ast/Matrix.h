@@ -2,6 +2,7 @@
 #define __Matrix_h
 
 #include "math/Vector.h"
+#include "parser/ErrorHandler.h"
 
 
 enum class MatrixIndexType
@@ -13,7 +14,8 @@ enum class MatrixIndexType
 inline auto
 matrixIndexOutOfRange(MatrixIndexType it, int i, size_t n)
 {
-    util::error<std::logic_error>("Matrix index out of range: "
+    calc::ErrorHandler errorHandler;
+    errorHandler.error(0, "Matrix index out of range: "
         "%s %d not in [0,%llu)",
         it == MatrixIndexType::Row ? "row" : "column", i, n);
 }
@@ -21,7 +23,8 @@ matrixIndexOutOfRange(MatrixIndexType it, int i, size_t n)
 inline auto
 matrixDimensionMustAgree(size_t m1, size_t n1, size_t m2, size_t n2)
 {
-    util::error<std::logic_error>("Matrix dimensions must agree: "
+    calc::ErrorHandler errorHandler;
+    errorHandler.error(0, "Matrix dimensions must agree: "
         "(%llu,%llu), (%llu,%llu)", m1, n1, m2, n2);
 }
 
