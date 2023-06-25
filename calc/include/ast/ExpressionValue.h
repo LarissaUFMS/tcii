@@ -4,6 +4,7 @@
 #include "ast/Expression.h"
 #include "Matrix.h"
 #include <variant>
+#include <iostream>
 
 using IntMatrix = Matrix<int>;
 using FloatMatrix = Matrix<float>;
@@ -272,7 +273,16 @@ public:
 
   void write(Writer& w) const
   {
-	  ;
+	  if (_type == Type::Float())
+	  {
+		  auto matrix = std::get<FloatMatrix>(this->_value);
+		  std::cout << "Primeiro elemento: " << *matrix.data() << std::endl;
+	  }
+	  else
+	  {
+		  auto matrix = std::get<IntMatrix>(this->_value);
+		  std::cout << "Primeiro elemento: " << *matrix.data() << std::endl;
+	  }
   }
 
   static Value colon(const Value& a, const Value& b, const Value& c)
