@@ -56,6 +56,11 @@ public:
         _data = new T[m * n];
     }
 
+    Matrix(size_t m, size_t n, T* data):
+        _m{m}, _n{n},
+        _data{ data }
+    {}
+
     Matrix(const Matrix&);
     Matrix(Matrix&&) noexcept;
 
@@ -114,6 +119,8 @@ public:
     Matrix& row(int i) const;
     Matrix& col(int j) const;
 
+    T* data() const;
+
 private:
     size_t _m{};
     size_t _n{};
@@ -128,7 +135,7 @@ Matrix<T>::Matrix(const Matrix& other) :
 #ifdef _DEBUG
     puts("**Matrix copy ctor**");
 #endif // _DEBUG
-    for (auto s = _m * _n, i = 0; i < s; ++i)
+    for (size_t s = _m * _n, i = 0; i < s; ++i)
         _data[i] = other._data[i];
 }
 
@@ -157,7 +164,7 @@ Matrix<T>::operator =(const Matrix& other)
         delete[]_data;
         _m = other._m;
         _n = other._n;
-        _data = new float[_m * _n];
+        _data = new T[_m * _n];
     }
     for (size_t s = _m * _n, i{}; i < s; ++i)
         _data[i] = other._data[i];
@@ -251,17 +258,17 @@ Matrix<T>::operator *(const Matrix& b) const
 {
 #ifdef _DEBUG
     if (_m != b._n)
-        matrixDimensionMustAgree(_m, _n, b._m, b_n);
+        matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
 
-    Matrix<T> c(_m, b._n);
+    Matrix c(_m, b._n);
 
     for (size_t i = 0; i < _m; i++)
     {
         for (size_t j = 0; j < b._n; j++)
         {
             for (size_t k = 0; k < _n; k++)
-                c[i * b._n + j] += _data[i * _n + k] * b._data[k * b._n + j];
+                c._data[i * b._n + j] += _data[i * _n + k] * b._data[k * b._n + j];
         }
     }
     return c;
@@ -300,6 +307,7 @@ Matrix<T>::transpose() const
         for (size_t j = 0; j < _n; ++j)
             c._data[_m * j + i] = _data[_n * i + j];
     }
+    return c;
 }
 
 template <typename T>
@@ -308,7 +316,7 @@ Matrix<T>::horzcat(const Matrix& b) const
 {
 #ifdef _DEBUG
     if (_m != b._n)
-        matrixDimensionMustAgree(_m, _n, b._m, b_n);
+        matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
 
     Matrix c{_m, _n + b._n};
@@ -349,6 +357,7 @@ Matrix<T>::vertcat(const Matrix& b) const
 
     for (size_t s = b._m * b._n, i{}, k{_m * _n}; i < s; ++i, ++k)
         c._data[i] = b._data[i];
+    return c;
 }
 
 template<typename T>
@@ -388,5 +397,12 @@ Matrix<T>::iterate(IterFunc f) const
             e.value = _data[p++];
             f(e);
         }
+}
+
+template <typename T>
+T*
+Matrix<T>::data() const
+{
+    return _data;
 }
 #endif // __Matrix_h
