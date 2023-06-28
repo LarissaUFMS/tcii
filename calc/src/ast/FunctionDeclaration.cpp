@@ -40,24 +40,56 @@ namespace calc::ast
 //
 // FunctionDeclaration implementation
 // ===================
-void
-FunctionDeclaration::resolve(Scope* scope)
-//[]----------------------------------------------------[]
-//|  Resolve                                             |
-//[]----------------------------------------------------[]
-{
-  // TODO
-	//verificar os parametros são iguais
-  (void)scope;
-}
+  void
+    FunctionDeclaration::resolve(Scope* scope)
+    //[]----------------------------------------------------[]
+    //|  Resolve                                             |
+    //[]----------------------------------------------------[]
+  {
+    // checa se as variaveis tem nomes diferentes
 
-Statement::JumpCode
-FunctionDeclaration::execute(Frame* frame) const
-//[]----------------------------------------------------[]
-//|  Execute                                             |
-//[]----------------------------------------------------[]
-{
-  return JumpCode::NEXT;
-}
+    auto param_itr_i = _parameters.begin();
+    auto param_itr_j = _parameters.begin();
+    auto param_end = _parameters.end();
+    auto cmp = param_itr_i->name();
+    bool invalid_variable = false;
+
+
+    for (; param_itr_i != param_end && !invalid_variable; param_itr_i++)
+    {
+      for (param_itr_j = param_itr_i; param_itr_j != param_end; param_itr_j++)
+      {
+        if (cmp == param_itr_j->name())
+        {
+          invalid_variable = true;
+          break;
+        }
+      }
+    }
+
+    if (invalid_variable)
+    {
+      // o que fazer quando tem variavel com nome repetido
+    }
+
+    // checa se ja existe função com mesmo nome
+
+    if (scope->lookupFunction(_name) != nullptr)
+    {
+      // se existir, sobrescreve(como??)
+
+    }
+
+    (void)scope;
+  }
+
+  Statement::JumpCode
+    FunctionDeclaration::execute(Frame* frame) const
+    //[]----------------------------------------------------[]
+    //|  Execute                                             |
+    //[]----------------------------------------------------[]
+  {
+    return JumpCode::NEXT;
+  }
 
 } // end namespace calc::ast
