@@ -335,7 +335,7 @@ Matrix<T>::horzcat(const Matrix& b) const
     if (_m == 0)
         return b;
 #ifdef _DEBUG
-    if (_m != b._n )
+    if (_m != b._m )
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
     
