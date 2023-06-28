@@ -33,6 +33,7 @@
 #include "ast/Assignment.h"
 #include "Frame.h"
 #include "ProblemReporter.h"
+#include "ast/FrameFunction.h"
 
 namespace calc::ast
 { // begin namespace calc::ast
@@ -42,93 +43,118 @@ namespace calc::ast
 //
 // Assignment implementation
 // ==========
-void
-Assignment::resolve(Scope* scope)
-//[]----------------------------------------------------[]
-//|  Resolve                                             |
-//[]----------------------------------------------------[]
-{
-  _expression->resolve(scope);
-
-  size_t rs{1};
-
-  if (_reference != nullptr)
-    if (auto function = _reference->function)
-      rs = function->output().size();
-  if (_lhs.size() > rs)
-    problemReporter.tooManyOutputArguments(scope, _expression);
-}
-
-//
-// Auxiliary function
-//
-inline auto&
-value(Frame* frame, const Variable* v)
-{
-  return frame->findRecord(v->name())->value;
-}
-
-void
-Assignment::setValue(Frame* frame, Reference* r, const Expression::Value& rv)
-//[]----------------------------------------------------[]
-//|  Set value                                           |
-//[]----------------------------------------------------[]
-{
-  auto& varName = r->name();
-  auto var = frame->findRecord(varName);
-
-  if (nullptr == var)
+  void
+    Assignment::resolve(Scope* scope)
+    //[]----------------------------------------------------[]
+    //|  Resolve                                             |
+    //[]----------------------------------------------------[]
   {
-    frame->buildVariable(varName);
-    r->resolve(frame->scope());
-    var = frame->findRecord(varName);
-    assert(var != nullptr);
+    _expression->resolve(scope);
+
+    size_t rs{ 1 };
+
+    _reference = dynamic_cast<Reference*>(_expression.get());
+
+    if (_reference != nullptr)
+      if (auto function = _reference->function)
+        rs = function->output().size();
+    if (_lhs.size() > rs)
+      problemReporter.tooManyOutputArguments(scope, _expression);
   }
-  try
+
+  //
+  // Auxiliary function
+  //
+  inline auto&
+    value(Frame* frame, const Variable* v)
   {
-    [&]()
+    return frame->findRecord(v->name())->value;
+  }
+
+  void
+    Assignment::setValue(Frame* frame, Reference* r, const Expression::Value& rv)
+    //[]----------------------------------------------------[]
+    //|  Set value                                           |
+    //[]----------------------------------------------------[]
+  {
+    auto& varName = r->name();
+    auto var = frame->findRecord(varName);
+
+    if (nullptr == var)
     {
-      auto& lv = var->value;
-      const auto& args = r->arguments();
-
-      if (auto nargs = args.size())
+      frame->buildVariable(varName);
+      r->resolve(frame->scope());
+      var = frame->findRecord(varName);
+      assert(var != nullptr);
+    }
+    try
+    {
+      [&]()
       {
-        auto a = args.begin();
-        auto i = r->evalIndex(frame, *a);
+        auto& lv = var->value;
+        const auto& args = r->arguments();
 
-        if (nargs == 1)
-          return i.colon ? lv.setVector(rv) : lv.set(i.value, rv);
-        ++a;
+        if (auto nargs = args.size())
+        {
+          auto a = args.begin();
+          auto i = r->evalIndex(frame, *a);
 
-        auto j = r->evalIndex(frame, *a);
+          if (nargs == 1)
+            return i.colon ? lv.setVector(rv) : lv.set(i.value, rv);
+          ++a;
 
-        if (!i.colon)
-          return j.colon ?
+          auto j = r->evalIndex(frame, *a);
+
+          if (!i.colon)
+            return j.colon ?
             lv.setRows(i.value, rv) :
             lv.set(i.value, j.value, rv);
-        if (!j.colon)
-          return lv.setCols(j.value, rv);
-      }
-      lv = rv;
-    }();
+          if (!j.colon)
+            return lv.setCols(j.value, rv);
+        }
+        lv = rv;
+      }();
+    }
+    catch (...)
+    {
+      if (!var->initialized)
+        frame->removeVariable(varName);
+      throw;
+    }
+    var->initialized = true;
   }
-  catch (...)
-  {
-    if (!var->initialized)
-      frame->removeVariable(varName);
-    throw;
-  }
-  var->initialized = true;
-}
 
-Statement::JumpCode
-Assignment::execute(Frame* frame) const
-//[]----------------------------------------------------[]
-//|  Execute                                             |
-//[]----------------------------------------------------[]
-{
-  setValue(frame, *_lhs.begin(), _expression->eval(frame));
-  return NEXT;
-}
+  Statement::JumpCode
+    Assignment::execute(Frame* frame) const
+    //[]----------------------------------------------------[]
+    //|  Execute                                             |
+    //[]----------------------------------------------------[]
+  {
+    if (_reference)
+      if (auto function = _reference->function)
+      {
+        Value* func_return = new Value[function->output().size()];
+        FrameFunction ff(function->parameters().size(), function->output().size());
+
+        ff.writeInputs(&_reference->arguments(), frame);
+
+        // execute
+
+        ff.readOutputs(func_return);
+
+        auto lhs_size = _lhs.size();
+        auto vars = _lhs.begin();
+        for (auto i = 0; i < lhs_size; i++)
+        {
+          setValue(frame, *vars, func_return[i]);
+          vars++;
+        }
+
+        return NEXT;
+      }
+
+    setValue(frame, *_lhs.begin(), _expression->eval(frame));
+    return NEXT;
+  }
 
 } // end namespace calc::ast
