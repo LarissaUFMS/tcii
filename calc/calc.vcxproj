@@ -84,6 +84,7 @@
     <ClInclude Include="include\AST\Assignment.h" />
     <ClInclude Include="include\AST\AST.h" />
     <ClInclude Include="include\AST\BinaryExpression.h" />
+    <ClInclude Include="include\ast\FrameFunction.h" />
     <ClInclude Include="include\ast\Matrix.h" />
     <ClInclude Include="include\ast\CastExpression.h" />
     <ClInclude Include="include\AST\ColonAtom.h" />
@@ -130,6 +131,7 @@
     <ClCompile Include="src\ast\Expression.cpp" />
     <ClCompile Include="src\ast\ExpressionStatement.cpp" />
     <ClCompile Include="src\ast\FloatLiteral.cpp" />
+    <ClCompile Include="src\ast\FrameFunction.cpp" />
     <ClCompile Include="src\ast\FunctionDeclaration.cpp" />
     <ClCompile Include="src\ast\IntLiteral.cpp" />
     <ClCompile Include="src\ast\MatrixExpression.cpp" />
@@ -137,6 +139,7 @@
     <ClCompile Include="src\ast\SizeExpression.cpp" />
     <ClCompile Include="src\ast\Transpose.cpp" />
     <ClCompile Include="src\ast\UnaryExpression.cpp" />
+    <ClCompile Include="src\Built-in functions\Zeroes.cpp" />
     <ClCompile Include="src\Frame.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\parser\ErrorHandler.cpp" />

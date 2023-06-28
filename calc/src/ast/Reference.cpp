@@ -33,90 +33,104 @@
 #include "ast/ColonAtom.h"
 #include "Frame.h"
 #include "ProblemReporter.h"
+#include "ast/FrameFunction.h"
 
 namespace calc::ast
 { // begin namespace calc::ast
 
-inline auto
-isColonAtom(Expression* e)
-{
-  return dynamic_cast<ColonAtom*>(e) != nullptr;
-}
-
-
-/////////////////////////////////////////////////////////////////////
-//
-// Reference implementation
-// =========
-void
-Reference::resolve(Scope* scope)
-//[]----------------------------------------------------[]
-//|  Resolve                                             |
-//[]----------------------------------------------------[]
-{
-  auto hasColonAtom = false;
-
-  for (auto a : _arguments)
+  inline auto
+    isColonAtom(Expression* e)
   {
-    a->resolveVoid(scope);
-    hasColonAtom |= isColonAtom(a);
+    return dynamic_cast<ColonAtom*>(e) != nullptr;
   }
-  if ((variable = scope->lookupVariable(_name)) != nullptr)
+
+
+  /////////////////////////////////////////////////////////////////////
+  //
+  // Reference implementation
+  // =========
+  void
+    Reference::resolve(Scope* scope)
+    //[]----------------------------------------------------[]
+    //|  Resolve                                             |
+    //[]----------------------------------------------------[]
   {
-    if (_arguments.size() > 2)
+    auto hasColonAtom = false;
+
+    for (auto a : _arguments)
+    {
+      a->resolveVoid(scope);
+      hasColonAtom |= isColonAtom(a);
+    }
+    if ((variable = scope->lookupVariable(_name)) != nullptr)
+    {
+      if (_arguments.size() > 2)
+        problemReporter.tooManyArguments(scope, this);
+    }
+    else if (_place == LHS || hasColonAtom)
+      problemReporter.undefinedVariable(scope, this);
+    else if ((function = scope->lookupFunction(_name)) == nullptr)
+      problemReporter.undefinedVariableOrFunction(scope, this);
+    else if (_arguments.size() > function->parameters().size())
       problemReporter.tooManyArguments(scope, this);
   }
-  else if (_place == LHS || hasColonAtom)
-    problemReporter.undefinedVariable(scope, this);
-  else if ((function = scope->lookupFunction(_name)) == nullptr)
-    problemReporter.undefinedVariableOrFunction(scope, this);
-  else if (_arguments.size() > function->parameters().size())
-    problemReporter.tooManyArguments(scope, this);
-}
 
-Reference::Index
-Reference::evalIndex(Frame* frame, Expression* e)
-//[]----------------------------------------------------[]
-//|  Eval index                                          |
-//[]----------------------------------------------------[]
-{
-  Index i;
-
-  if (!(i.colon = isColonAtom(e)))
-    i.value = e->eval(frame);
-  return i;
-}
-
-Expression::Value
-Reference::eval(Frame* frame) const
-//[]----------------------------------------------------[]
-//|  Eval                                                |
-//[]----------------------------------------------------[]
-{
-  if (variable != nullptr)
+  Reference::Index
+    Reference::evalIndex(Frame* frame, Expression* e)
+    //[]----------------------------------------------------[]
+    //|  Eval index                                          |
+    //[]----------------------------------------------------[]
   {
-    auto& v = frame->findRecord(_name)->value;
+    Index i;
 
-    if (auto nargs = _arguments.size())
-    {
-      auto a = _arguments.begin();
-      auto i = evalIndex(frame, *a);
-
-      if (nargs == 1)
-        return i.colon ? v.vector() : v(i.value);
-      ++a;
-
-      auto j = evalIndex(frame, *a);
-
-      if (!i.colon)
-        return j.colon ? v.rows(i.value) : v(i.value, j.value);
-      if (!j.colon)
-        return v.cols(j.value);
-    }
-    return v;
+    if (!(i.colon = isColonAtom(e)))
+      i.value = e->eval(frame);
+    return i;
   }
-  // TODO
-  return Value{};
-}
+
+  Expression::Value
+    Reference::eval(Frame* frame) const
+    //[]----------------------------------------------------[]
+    //|  Eval                                                |
+    //[]----------------------------------------------------[]
+  {
+    if (variable != nullptr)
+    {
+      auto& v = frame->findRecord(_name)->value;
+
+      if (auto nargs = _arguments.size())
+      {
+        auto a = _arguments.begin();
+        auto i = evalIndex(frame, *a);
+
+        if (nargs == 1)
+          return i.colon ? v.vector() : v(i.value);
+        ++a;
+
+        auto j = evalIndex(frame, *a);
+
+        if (!i.colon)
+          return j.colon ? v.rows(i.value) : v(i.value, j.value);
+        if (!j.colon)
+          return v.cols(j.value);
+      }
+      return v;
+    }
+    else if (function != nullptr)
+    {
+      Value* func_return = new Value[this->function->output().size()];
+      FrameFunction ff(this->function->parameters().size(), this->function->output().size());
+
+      ff.writeInputs(&_arguments, frame);
+
+      // execute
+
+      ff.readOutputs(func_return);
+
+      return func_return[0];
+    }
+
+    return Value{};
+  }
 
 } // end namespace calc::ast
