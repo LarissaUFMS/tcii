@@ -31,26 +31,43 @@ public:
   Value():
 	  _type{ Type::Float() },
 	  _value{ FloatMatrix() }
-  {}
+  {
+#ifdef _DEBUG
+	  puts("** Value()**");
+#endif // _DEBUG
+  }
   Value(int v):
 	  _type{ Type::Float() }
   {
+#ifdef _DEBUG
+	  puts("** Value(int)**");
+#endif // _DEBUG
 	  float vCast = static_cast<float>(v);
 	  _value = FloatMatrix( vCast);
 	
   }
-  Value(float v):
+  Value(float v) :
 	  _type{ Type::Float() },
 	  _value{ FloatMatrix(v) }
-  {}
+  {
+#ifdef _DEBUG
+	  puts("** Value(float)**");
+#endif // _DEBUG}
+  }
 
   Type* type() const
   {
+#ifdef _DEBUG
+	  puts("** Value type()**");
+#endif // _DEBUG
     return _type;
   }
 
   Value castTo(const Type* other) const
   {
+#ifdef _DEBUG
+	  puts("** Value castTo**");
+#endif // _DEBUG
 	  if (this->type() == other)
 	  {
 		  return *this;
@@ -72,6 +89,9 @@ public:
 
   Value operator +(const Value& other) const
   {
+#ifdef _DEBUG
+	  puts("** Value operator +(Value&)**");
+#endif // _DEBUG
 	  typesEqual(other);
 
 	  Value temp;
@@ -90,6 +110,9 @@ public:
 
   Value operator -(const Value& other) const
   {
+#ifdef _DEBUG
+	  puts("** Value operator -(Value&)**");
+#endif // _DEBUG
 	  typesEqual(other);
 
 	  Value temp;
@@ -108,6 +131,9 @@ public:
 
   Value operator *(const Value& other) const
   {
+#ifdef _DEBUG
+	  puts("** Value operator *(Value&)**");
+#endif // _DEBUG
 	  typesEqual(other);
 
 	  Value temp;
@@ -196,9 +222,12 @@ public:
 
   Value horzcat(const Value& other) const
   {
+#ifdef _DEBUG
+	  puts("** horzcat(Value&)**");
+#endif // _DEBUG
+
 	  Value temp;
 	  temp._type = _type;
-
 	  typesEqual(other);
 	  if (_type == Type::Float())
 	  {
@@ -213,6 +242,10 @@ public:
 
   Value vertcat(const Value& other) const
   {
+#ifdef _DEBUG
+	  puts("** Value vertcat(Value&)**");
+#endif // _DEBUG
+
 	  Value temp;
 	  temp._type = _type;
 
@@ -220,6 +253,7 @@ public:
 	  if (_type == Type::Float())
 	  {
 		  temp._value = std::get<FloatMatrix>(_value).vertcat(std::get<FloatMatrix>(other._value));
+
 	  }
 	  else
 	  {
@@ -273,15 +307,18 @@ public:
 
   void write(Writer& w) const
   {
-	  if (_type == Type::Float())
+	  if (const FloatMatrix* floatMatrix = std::get_if<FloatMatrix>(&this->_value))
 	  {
-		  auto matrix = std::get<FloatMatrix>(this->_value);
-		  std::cout << "Primeiro elemento: " << *matrix.data() << std::endl;
+		  floatMatrix->iterate([](const FloatMatrix::Element& e) {
+			  std::cout << e.value << ", ";
+			  });
 	  }
 	  else
 	  {
-		  auto matrix = std::get<IntMatrix>(this->_value);
-		  std::cout << "Primeiro elemento: " << *matrix.data() << std::endl;
+		  const IntMatrix* intMatrix = std::get_if<IntMatrix>(&this->_value);
+		  intMatrix->iterate([](const IntMatrix::Element& e) {
+			  std::cout << e.value << ", ";
+			  });
 	  }
   }
 
@@ -314,6 +351,8 @@ private:
 	  for (size_t s = m * n, i{}; i < s; ++i)
 		  dataCast[i] = static_cast<Tcast>(dataCurrentPtr[i]);
 	  Matrix<Tcast> tempCast(m, n, dataCast);
+	  std::cout << "Type of Tcast: " << typeid(Tcast).name() << std::endl;
+	  std::cout << "Type of dataCast: " << typeid(*dataCast).name() << std::endl;
 	  return tempCast;
   }
 

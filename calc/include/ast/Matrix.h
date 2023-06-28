@@ -3,6 +3,8 @@
 
 #include "math/Vector.h"
 #include "parser/ErrorHandler.h"
+#include "ast/ExpressionValue.h"
+#include <iostream>
 
 
 enum class MatrixIndexType
@@ -31,6 +33,7 @@ matrixDimensionMustAgree(size_t m1, size_t n1, size_t m2, size_t n2)
 template <typename T>
 class Matrix
 {
+    friend class calc::ast::Expression::Value;
 public:
     using value_type = T;
 
@@ -50,6 +53,9 @@ public:
     Matrix(float v):
         _m{1}, _n{1}
     {
+#ifdef _DEBUG
+        puts("** Matrix(float)**");
+#endif // _DEBUG
         _data = new float{v};
     }
 
@@ -60,9 +66,15 @@ public:
     }
 
     Matrix(size_t m, size_t n, T* data):
-        _m{m}, _n{n},
-        _data{ data }
-    {}
+        _m{m}, _n{n}
+    {
+#ifdef _DEBUG
+        puts("**Matrix(size_t m, size_t n, T* data)**");
+#endif // _DEBUG
+        _data = new T[_m * _n];
+        for (size_t s = _m * _n, i{}; i < s; ++i)
+            _data[i] = data[i];
+    }
 
     Matrix(const Matrix&);
     Matrix(Matrix&&) noexcept;
@@ -260,6 +272,7 @@ Matrix<T>
 Matrix<T>::operator *(const Matrix& b) const
 {
 #ifdef _DEBUG
+    puts("** Matrix operator*(Matrix)");
     if (_m != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
@@ -270,6 +283,7 @@ Matrix<T>::operator *(const Matrix& b) const
     {
         for (size_t j = 0; j < b._n; j++)
         {
+            c._data[i * b._n + j] = 0;
             for (size_t k = 0; k < _n; k++)
                 c._data[i * b._n + j] += _data[i * _n + k] * b._data[k * b._n + j];
         }
@@ -317,14 +331,17 @@ template <typename T>
 Matrix<T>
 Matrix<T>::horzcat(const Matrix& b) const
 {
+
+    if (_m == 0)
+        return b;
 #ifdef _DEBUG
-    if (_m != b._n)
+    if (_m != b._n )
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
-
+    
     Matrix c{_m, _n + b._n};
     size_t r, k;
-
+    
     for (size_t i{}; i < _m; ++i)
     {
         r = i * (_n + b._n);
@@ -338,7 +355,7 @@ Matrix<T>::horzcat(const Matrix& b) const
         k = i * b._n;
         for (size_t j{}; j < b._n; ++j)
         {
-            c._data[r + j] = _data[k + j];
+            c._data[r + j] = b._data[k + j];
         }
     }
     return c;
@@ -348,6 +365,8 @@ template <typename T>
 Matrix<T>
 Matrix<T>::vertcat(const Matrix& b) const
 {
+    if (_m == 0)
+        return b;
 #ifdef _DEBUG
     if (_n != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);

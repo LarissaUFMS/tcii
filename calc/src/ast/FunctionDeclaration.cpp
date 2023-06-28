@@ -47,6 +47,7 @@ FunctionDeclaration::resolve(Scope* scope)
 //[]----------------------------------------------------[]
 {
   // TODO
+	//verificar os parametros são iguais
   (void)scope;
 }
 
