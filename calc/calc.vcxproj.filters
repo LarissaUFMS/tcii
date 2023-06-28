@@ -27,6 +27,9 @@
     <Filter Include="Source Files\symbol">
       <UniqueIdentifier>{60f65759-9b58-42d6-91e8-5ce2e24dd1d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Built-in functions">
+      <UniqueIdentifier>{5a3e171e-b48d-4323-b17c-45ae9ba04bfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\parser\InputBuffer.h">
@@ -146,6 +149,9 @@
     <ClInclude Include="include\ast\Matrix.h">
       <Filter>Header Files\ast</Filter>
     </ClInclude>
+    <ClInclude Include="include\ast\FrameFunction.h">
+      <Filter>Header Files\ast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parser\ErrorHandler.cpp">
@@ -219,6 +225,12 @@
     </ClCompile>
     <ClCompile Include="src\symbol\Symbol.cpp">
       <Filter>Source Files\symbol</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ast\FrameFunction.cpp">
+      <Filter>Source Files\ast</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Built-in functions\Zeroes.cpp">
+      <Filter>Source Files\Built-in functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
