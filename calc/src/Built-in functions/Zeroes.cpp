@@ -5,7 +5,7 @@ namespace calc::ast
 { // begin namespace calc::ast
 
 // Param: int size_row, int size_col
-	void zeroes(FrameFunction ff)
+	bool zeroes(FrameFunction& ff)
 	{
 		Value inputs[2];
 
@@ -16,13 +16,24 @@ namespace calc::ast
 		int size_row; // como pegar o numero dentro de Value?
 		int size_col;
 
-		IntMatrix zeroMatrix{ size_row, size_col };
+		if (size_row > 0 && size_col > 0)
+		{
+			IntMatrix zeroMatrix{ size_row, size_col };
 
-		zeroMatrix *= 0;
+			zeroMatrix *= 0;
 
-		Value ret{ zeroMatrix };
+			Value ret{ zeroMatrix };
 
-		ff.writeOutputs(&ret);
+			ff.writeOutputs(&ret);
+
+			return 1;
+		}
+		else
+		{
+			ff.setError(1);
+			return 0;
+		}
+
 	}
 
 } // end namespace calc::ast
