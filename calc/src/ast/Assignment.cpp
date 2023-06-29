@@ -138,19 +138,25 @@ namespace calc::ast
 
         ff.writeInputs(&_reference->arguments(), frame);
 
-        // execute
-
-        ff.readOutputs(func_return);
-
-        auto lhs_size = _lhs.size();
-        auto vars = _lhs.begin();
-        for (auto i = 0; i < lhs_size; i++)
+        if (function->call(ff))
         {
-          setValue(frame, *vars, func_return[i]);
-          vars++;
+          ff.readOutputs(func_return);
+
+          auto lhs_size = _lhs.size();
+          auto vars = _lhs.begin();
+          for (auto i = 0; i < lhs_size; i++)
+          {
+            setValue(frame, *vars, func_return[i]);
+            vars++;
+          }
+
+          return NEXT;
+        }
+        else
+        {
+          // checa os erros
         }
 
-        return NEXT;
       }
 
     setValue(frame, *_lhs.begin(), _expression->eval(frame));
