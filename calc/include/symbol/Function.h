@@ -35,6 +35,7 @@
 
 #include "ast/FunctionDeclaration.h"
 #include "symbol/Variable.h"
+#include "ast/FrameFunction.h"
 
 namespace calc::symbol
 { // begin namespace calc::symbol
@@ -47,21 +48,23 @@ namespace calc::symbol
 class Function: public Symbol
 {
 public:
+  using Func = ast::FunctionDeclaration::Func;
   using Parameters = util::ObjectPtrList<Variable>;
 
-  Function(const String& name):
-    Symbol{name}
+  Function(const String& name, Func* f):
+    Symbol{name}, _function{f}
   {
     // do nothing
   }
 
-  Function(ast::FunctionDeclaration* f):
-    Symbol{f->name()}
+  Function(ast::FunctionDeclaration* fd) :
+    Symbol{ fd->name() }
   {
     // TODO
-    f->function = this;
+    _function = fd->getFunction();
+    fd->function = this;
   }
-
+  
   auto& parameters()
   {
     return _parameters;
@@ -72,9 +75,15 @@ public:
     return _output;
   }
 
+  auto call(ast::FrameFunction& ff)
+  {
+    return _function(ff);
+  }
+
 private:
   Parameters _parameters;
   Parameters _output;
+  Func* _function;
 
 }; // Function
 

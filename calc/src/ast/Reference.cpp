@@ -123,11 +123,17 @@ namespace calc::ast
 
       ff.writeInputs(&_arguments, frame);
 
-      // execute
+      if (function->call(ff))
+      {
+        ff.readOutputs(func_return);
 
-      ff.readOutputs(func_return);
+        return func_return[0];
+      }
+      else
+      {
+        // checa os erros
+      }
 
-      return func_return[0];
     }
 
     return Value{};

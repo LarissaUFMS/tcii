@@ -139,6 +139,7 @@
     <ClCompile Include="src\ast\SizeExpression.cpp" />
     <ClCompile Include="src\ast\Transpose.cpp" />
     <ClCompile Include="src\ast\UnaryExpression.cpp" />
+    <ClCompile Include="src\Built-in functions\AddFunctions.cpp" />
     <ClCompile Include="src\Built-in functions\Zeroes.cpp" />
     <ClCompile Include="src\Frame.cpp" />
     <ClCompile Include="src\Main.cpp" />

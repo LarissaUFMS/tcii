@@ -232,6 +232,9 @@
     <ClCompile Include="src\Built-in functions\Zeroes.cpp">
       <Filter>Source Files\Built-in functions</Filter>
     </ClCompile>
+    <ClCompile Include="src\Built-in functions\AddFunctions.cpp">
+      <Filter>Source Files\Built-in functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="grammar.txt" />

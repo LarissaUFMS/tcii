@@ -68,6 +68,7 @@ using ParameterList = List<Parameter>;
 class FunctionDeclaration: public Declaration
 {
 public:
+  using Func = bool(FrameFunction&);
   symbol::Function* function{};
 
   FunctionDeclaration():
@@ -79,6 +80,16 @@ public:
   void setName(const String& name)
   {
     this->_name = name;
+  }
+
+  void setFunction(Func* f)
+  {
+    this->_function = f;
+  }
+
+  auto& getFunction()
+  {
+    return _function;
   }
 
   auto& parameters()
@@ -97,6 +108,7 @@ public:
 private:
   ParameterList _parameters;
   ParameterList _output;
+  Func *_function = nullptr;
 
 }; // FunctionDeclaration
 

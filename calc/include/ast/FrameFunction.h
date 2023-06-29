@@ -20,11 +20,13 @@ namespace calc::ast
 		void writeOutputs(Value*);
 		void readInputs(Value*);
 		void readOutputs(Value*);
+		void setError(int);
+		void printError();
 
 	private:
 		Value* _input;
 		Value* _output;
-		Value* _error;
+		int _error = 0;
 
 		int _inpSize;
 		int _outSize;
