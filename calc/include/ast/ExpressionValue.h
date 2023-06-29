@@ -42,13 +42,12 @@ public:
 #ifdef _DEBUG
 	  puts("** Value(int)**");
 #endif // _DEBUG
-	  float vCast = static_cast<float>(v);
-	  _value = FloatMatrix( vCast);
+	  _value = static_cast<float>(v);
 	
   }
   Value(float v) :
 	  _type{ Type::Float() },
-	  _value{ FloatMatrix(v) }
+	  _value { v } 
   {
 #ifdef _DEBUG
 	  puts("** Value(float)**");
@@ -78,11 +77,17 @@ public:
 
 	  if (other == Type::Int())
 	  {
-		  temp._value = castTo<float, int>();
+		  if (auto v = std::get_if<int>(&_value))
+			  temp._value = static_cast<float>(*v);
+		  else
+			  temp._value = castTo<float, int>();
 	  }
 	  else
 	  {
-		  temp._value = castTo<int, float>();
+		  if (auto v = std::get_if<float>(&_value))
+			  temp._value = static_cast<int>(*v);
+		  else
+			  temp._value = castTo<int, float>();
 	  }
 	  return temp;
   }
@@ -98,11 +103,41 @@ public:
 	  temp._type = _type;
 	  if (_type == Type::Float())
 	  {
-		  temp._value = std::get<FloatMatrix>(_value) + std::get<FloatMatrix>(other._value);
+		  if (auto v1 = std::get_if<float>(&_value))
+		  {
+			  if (auto v2 = std::get_if<float>(&other._value))
+				  temp._value = *v1 + *v2;
+			  else
+				  temp._value = std::get<FloatMatrix>(other._value) + *v1;
+		  }
+		  else if (auto v1 = std::get_if<float>(&other._value))
+		  {
+			  if (auto v2 = std::get_if<float>(&_value))
+				  temp._value = *v1 + *v2;
+			  else
+				  temp._value = std::get<FloatMatrix>(_value) + *v1;
+		  }
+		  else
+			temp._value = std::get<FloatMatrix>(_value) + std::get<FloatMatrix>(other._value);
 	  }
 	  else
 	  {
-		  temp._value = std::get<IntMatrix>(_value) + std::get<IntMatrix>(other._value);
+		  if (auto v1 = std::get_if<int>(&_value))
+		  {
+			  if (auto v2 = std::get_if<int>(&other._value))
+				  temp._value = *v1 + *v2;
+			  else
+				  temp._value = std::get<IntMatrix>(other._value) + *v1;
+		  }
+		  else if (auto v1 = std::get_if<int>(&other._value))
+		  {
+			  if (auto v2 = std::get_if<int>(&_value))
+				  temp._value = *v1 + *v2;
+			  else
+				  temp._value = std::get<IntMatrix>(_value) + *v1;
+		  }
+		  else
+			temp._value = std::get<IntMatrix>(_value) + std::get<IntMatrix>(other._value);
 	  }
 
 	  return temp;
@@ -119,11 +154,41 @@ public:
 	  temp._type = _type;
 	  if (_type == Type::Float())
 	  {
-		  temp._value = std::get<FloatMatrix>(_value) - std::get<FloatMatrix>(other._value);
+		  if (auto v1 = std::get_if<float>(&_value))
+		  {
+			  if (auto v2 = std::get_if<float>(&other._value))
+				  temp._value = *v1 - *v2;
+			  else
+				  temp._value = std::get<FloatMatrix>(other._value) - *v1;
+		  }
+		  else if (auto v1 = std::get_if<float>(&other._value))
+		  {
+			  if (auto v2 = std::get_if<float>(&_value))
+				  temp._value = *v1 - *v2;
+			  else
+				  temp._value = std::get<FloatMatrix>(_value) - *v1;
+		  }
+		  else
+			  temp._value = std::get<FloatMatrix>(_value) - std::get<FloatMatrix>(other._value);
 	  }
 	  else
 	  {
-		  temp._value = std::get<IntMatrix>(_value) - std::get<IntMatrix>(other._value);
+		  if (auto v1 = std::get_if<int>(&_value))
+		  {
+			  if (auto v2 = std::get_if<int>(&other._value))
+				  temp._value = *v1 - *v2;
+			  else
+				  temp._value = std::get<IntMatrix>(other._value) - *v1;
+		  }
+		  else if (auto v1 = std::get_if<int>(&other._value))
+		  {
+			  if (auto v2 = std::get_if<int>(&_value))
+				  temp._value = *v1 - *v2;
+			  else
+				  temp._value = std::get<IntMatrix>(_value) - *v1;
+		  }
+		  else
+			  temp._value = std::get<IntMatrix>(_value) - std::get<IntMatrix>(other._value);
 	  }
 
 	  return temp;
@@ -189,7 +254,7 @@ public:
 	  Value temp;
 	  temp._type = Type::Int();
 
-	  size_t m, n;
+	  int m, n;
 	  if (_type == Type::Float())
 	  {
 		  m = std::get<FloatMatrix>(_value).rows();
@@ -200,7 +265,10 @@ public:
 		  m = std::get<IntMatrix>(_value).rows();
 		  n = std::get<IntMatrix>(_value).cols();
 	  }
-	  temp._value = IntMatrix{ m, n };
+
+	  int data[2]{m, n};
+	  temp._value = IntMatrix{ static_cast<size_t>(1), static_cast < size_t>(2), data};
+
 	  return temp;
   }
 
@@ -231,11 +299,17 @@ public:
 	  typesEqual(other);
 	  if (_type == Type::Float())
 	  {
-		  temp._value = std::get<FloatMatrix>(_value).horzcat(std::get<FloatMatrix>(other._value));
+		  if (auto v = get_if<float>(&other._value))
+			  temp._value = std::get<FloatMatrix>(_value).horzcat(*v);
+		  else
+			temp._value = std::get<FloatMatrix>(_value).horzcat(std::get<FloatMatrix>(other._value));
 	  }
 	  else
 	  {
-		  temp._value = std::get<IntMatrix>(_value).horzcat(std::get<IntMatrix>(other._value));
+		  if (auto v = get_if<int>(&other._value))
+			  temp._value = std::get<IntMatrix>(_value).horzcat(*v);
+		  else
+			  temp._value = std::get<IntMatrix>(_value).horzcat(std::get<IntMatrix>(other._value));
 	  }
 	  return temp;
   }
@@ -307,18 +381,47 @@ public:
 
   void write(Writer& w) const
   {
-	  if (const FloatMatrix* floatMatrix = std::get_if<FloatMatrix>(&this->_value))
+	  if (auto v = std::get_if<int>(&_value))
 	  {
-		  floatMatrix->iterate([](const FloatMatrix::Element& e) {
-			  std::cout << e.value << ", ";
-			  });
+		  std::cout << *v;
+	  }
+	  else if (auto v = std::get_if<float>(&_value))
+	  {
+		  std::cout << *v;
+	  }
+	  else if (auto floatMatrix = std::get_if<FloatMatrix>(&this->_value))
+	  {
+		  auto m = floatMatrix->rows();
+		  auto n = floatMatrix->cols();
+
+		  if (m == 0)
+		  {
+			  std::cout << "[]";
+			  return;
+		  }
+
+		  for (size_t i{}; i < m; ++i)
+		  {
+			  auto aux = i* n;
+			  for (size_t j{}; j < n; ++j)
+				  std::cout << floatMatrix->_data[ aux + j] << ',' ;
+			  std::cout << '\n';
+		  }
 	  }
 	  else
 	  {
-		  const IntMatrix* intMatrix = std::get_if<IntMatrix>(&this->_value);
-		  intMatrix->iterate([](const IntMatrix::Element& e) {
-			  std::cout << e.value << ", ";
-			  });
+		  auto intMatrix = std::get_if<IntMatrix>(&this->_value);
+
+		  auto m = intMatrix->rows();
+		  auto n = intMatrix->cols();
+
+		  for (size_t i{}; i < m; ++i)
+		  {
+			  auto aux = i * n;
+			  for (size_t j{}; j < n; ++j)
+				  std::cout << intMatrix->_data[aux + j] << ',';
+			  std::cout << '\n';
+		  }
 	  }
   }
 
@@ -328,7 +431,7 @@ public:
   }
 private:
   Type* _type;
-  std::variant<FloatMatrix, IntMatrix> _value;
+  std::variant<FloatMatrix, IntMatrix, int, float> _value;
 
   /*template <typename T> Value(const Matrix<T>&);
 

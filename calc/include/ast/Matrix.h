@@ -50,15 +50,6 @@ public:
 
     Matrix() = default;
 
-    Matrix(float v):
-        _m{1}, _n{1}
-    {
-#ifdef _DEBUG
-        puts("** Matrix(float)**");
-#endif // _DEBUG
-        _data = new float{v};
-    }
-
     Matrix(size_t m, size_t n):
         _m{m}, _n{n}
     {
@@ -121,6 +112,9 @@ public:
     Matrix operator +(const Matrix&) const;
     Matrix operator -(const Matrix&) const;
     Matrix operator *(const Matrix&) const;
+
+    Matrix operator +(const T&) const;
+    Matrix operator -(const T&) const;
     Matrix operator *(const T&) const;
 
     Matrix operator -() const;
@@ -130,6 +124,9 @@ public:
     Matrix transpose() const;
     Matrix horzcat(const Matrix&) const;
     Matrix vertcat(const Matrix&) const;
+
+    Matrix horzcat(const T&) const;
+    Matrix vertcat(const T&) const;
 
     Matrix& row(int i) const;
     Matrix& col(int j) const;
@@ -293,6 +290,23 @@ Matrix<T>::operator *(const Matrix& b) const
 
 template <typename T>
 Matrix<T>
+Matrix<T>::operator +(const T& t) const
+{
+    Matrix c{ _m, _n };
+
+    for (size_t s = _m * _n, i{}; i < s; ++i)
+        c._data[i] = _data[i] + t;
+    return c;
+}
+
+template <typename T>
+Matrix<T>
+Matrix<T>::operator -(const T& t) const
+{
+    return *this + (-t);
+}
+template <typename T>
+Matrix<T>
 Matrix<T>::operator *(const T& t) const
 {
     Matrix c{ _m, _n };
@@ -365,20 +379,41 @@ template <typename T>
 Matrix<T>
 Matrix<T>::vertcat(const Matrix& b) const
 {
-    if (_m == 0)
-        return b;
+
 #ifdef _DEBUG
-    if (_n != b._n)
+    if (_n != b._n && _m != 0)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
 
-    Matrix<T> c(_m + b._m, _n);
+    Matrix<T> c(_m + b._m, b._n);
 
     for (size_t s = _m * _n, i{}; i < s; ++i)
         c._data[i] = _data[i];
 
     for (size_t s = b._m * b._n, i{}, k{_m * _n}; i < s; ++i, ++k)
-        c._data[i] = b._data[i];
+        c._data[k] = b._data[i];
+    return c;
+}
+
+template <typename T>
+Matrix<T>
+Matrix<T>::horzcat(const T& b) const
+{
+    if (_m == 0)
+    {
+        T data[1]{ b };
+        Matrix c{ 1, 1, data };
+        return c;
+    }
+#ifdef _DEBUG
+    if (_m != 1)
+        matrixDimensionMustAgree(_m, _n, 1, 1);
+#endif //_DEBUG
+
+    Matrix c{ _m, _n + 1 };
+    for (int i{}; i < _n; ++i)
+        c._data[i] = _data[i];
+    c._data[_n] = b;
     return c;
 }
 
