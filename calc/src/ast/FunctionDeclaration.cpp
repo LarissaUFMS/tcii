@@ -31,6 +31,7 @@
 // Last revision: 17/05/2023
 
 #include "ast/FunctionDeclaration.h"
+#include "symbol/Scope.h"
 
 namespace calc::ast
 { // begin namespace calc::ast
@@ -48,10 +49,47 @@ namespace calc::ast
   {
     // checa se as variaveis tem nomes diferentes
 
-    auto param_itr_i = _parameters.begin();
-    auto param_itr_j = _parameters.begin();
-    auto param_end = _parameters.end();
-    auto cmp = param_itr_i->name();
+    auto invalid_input = check_param(_parameters);
+    auto invalid_output = check_param(_output);
+
+    if (invalid_input || invalid_output)
+    {
+      // o que fazer quando tem variavel com nome repetido?
+    }
+
+    // checa se ja existe função com mesmo nome
+
+    if (scope->lookupFunction(_name) != nullptr)
+    {
+      // o que fazer?
+
+    }
+
+    if (_function == nullptr)
+    {
+      // erro, sem funcao
+    }
+
+    (void)scope;
+  }
+
+  Statement::JumpCode
+    FunctionDeclaration::execute(Frame* frame) const
+    //[]----------------------------------------------------[]
+    //|  Execute                                             |
+    //[]----------------------------------------------------[]
+  {
+    return JumpCode::NEXT;
+  }
+
+  bool check_param(ParameterList& pl)
+  {
+    bool invalid_variable = false;
+
+    auto param_itr_i = pl.begin();
+    auto param_itr_j = pl.begin();
+    auto param_end = pl.end();
+    auto& cmp = param_itr_i->name();
     bool invalid_variable = false;
 
 
@@ -67,29 +105,7 @@ namespace calc::ast
       }
     }
 
-    if (invalid_variable)
-    {
-      // o que fazer quando tem variavel com nome repetido
-    }
-
-    // checa se ja existe função com mesmo nome
-
-    if (scope->lookupFunction(_name) != nullptr)
-    {
-      // se existir, sobrescreve(como??)
-
-    }
-
-    (void)scope;
-  }
-
-  Statement::JumpCode
-    FunctionDeclaration::execute(Frame* frame) const
-    //[]----------------------------------------------------[]
-    //|  Execute                                             |
-    //[]----------------------------------------------------[]
-  {
-    return JumpCode::NEXT;
-  }
+    return invalid_variable;
+  };
 
 } // end namespace calc::ast
