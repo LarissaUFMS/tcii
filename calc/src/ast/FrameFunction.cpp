@@ -7,63 +7,79 @@
 namespace calc::ast
 { // begin namespace calc::ast
 
-	using Value = Expression::Value;
+using Value = Expression::Value;
 
-	FrameFunction::FrameFunction(const int input_size, const int output_size)
+FrameFunction::FrameFunction(const int input_size, const int output_size)
+{
+	_input = new Value[input_size];
+	_output = new Value[output_size];
+
+	_inpSize = input_size;
+	_outSize = output_size;
+}
+
+FrameFunction::~FrameFunction()
+{
+	delete _input;
+	delete _output;
+}
+
+void
+FrameFunction::writeInputs(const ExpressionList* arguments, Frame* frame)
+{
+	auto arg_list = arguments->begin();
+
+	for (int i = 0; i < _inpSize; i++)
 	{
-		_input = new Value[input_size];
-		_output = new Value[output_size];
-		_error = nullptr;
-
-		_inpSize = input_size;
-		_outSize = output_size;
+		_input[i] = arg_list->eval(frame);
+		arg_list++;
 	}
+}
 
-	FrameFunction::~FrameFunction()
+void
+FrameFunction::readInputs(Value* inputs)
+{
+	for (int i = 0; i < _inpSize; i++)
 	{
-		delete _input;
-		delete _output;
-		delete _error;
+		inputs[i] = _input[i];
 	}
+}
 
-	void
-		FrameFunction::writeInputs(const ExpressionList* arguments, Frame* frame)
+void
+FrameFunction::writeOutputs(Value* outputs)
+{
+	for (int i = 0; i < _outSize; i++)
 	{
-		auto arg_list = arguments->begin();
-
-		for (int i = 0; i < _inpSize; i++)
-		{
-			_input[i] = arg_list->eval(frame);
-			arg_list++;
-		}
+		_output[i] = outputs[i];
 	}
+}
 
-	void
-		FrameFunction::readInputs(Value* inputs)
+void
+FrameFunction::readOutputs(Value* outputs)
+{
+	for (int i = 0; i < _outSize; i++)
 	{
-		for (int i = 0; i < _inpSize; i++)
-		{
-			inputs[i] = _input[i];
-		}
+		outputs[i] = _output[i];
 	}
+}
 
-	void
-		FrameFunction::writeOutputs(Value* outputs)
-	{
-		for (int i = 0; i < _outSize; i++)
-		{
-			_output[i] = outputs[i];
-		}
-	}
+void
+FrameFunction::setError(int error)
+{
+	_error = error;
+}
 
-	void
-		FrameFunction::readOutputs(Value* outputs)
+void
+FrameFunction::printError()
+{
+	switch (_error)
 	{
-		for (int i = 0; i < _outSize; i++)
-		{
-			outputs[i] = _output[i];
-		}
+	case 1: // invalid inputs
+		// throw exception? quando usar exception, quando apenas printar na tela
+	default:
+		break;
 	}
+}
 
 } // end namespace calc::ast
 
