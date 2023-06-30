@@ -322,14 +322,23 @@ namespace calc
 				return a;
 			}
 
+			template <typename T> Value(const Matrix<T>& m)
+			{
+				static_assert(std::is_same<T, int>::value || std::is_same<T, float>::value);
+
+				if (std::is_same<T, int>::value)
+					_type = Type::Int();
+				else
+					_type = Type::Float();
+
+				_value = m;
+			}
 
 		private:
 			Type* _type;
 			std::variant<FloatMatrix, IntMatrix> _value;
 
-			/*template <typename T> Value(const Matrix<T>&);
-
-			//Size valueSize() const;
+			/*Size valueSize() const;
 			template <typename T> Matrix<T> castTo() const;
 			Value block(const IntMatrix&, const IntMatrix&) const;
 			template <template <typename T> typename Op> Value bop(const Value&) const;
