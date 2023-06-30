@@ -1,6 +1,7 @@
-#pragma once
+#ifndef __FrameFunction_h_
+#define __FrameFunction_h_
+
 #include "util/SharedObject.h"
-#include "ast/FunctionDeclaration.h"
 #include "ast/ExpressionValue.h"
 #include "ast/ExpressionList.h"
 
@@ -33,4 +34,5 @@ namespace calc::ast
 	};
 
 } // end namespace calc::ast
-#pragma once
+
+#endif // __FrameFunction_h_

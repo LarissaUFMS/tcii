@@ -133,8 +133,9 @@ namespace calc::ast
     if (_reference)
       if (auto function = _reference->function)
       {
-        Value* func_return = new Value[function->output().size()];
-        FrameFunction ff(function->parameters().size(), function->output().size());
+        auto output_size = function->output().size();
+        Value* func_return = new Value[output_size];
+        FrameFunction ff(function->parameters().size(), output_size);
 
         ff.writeInputs(&_reference->arguments(), frame);
 
@@ -144,7 +145,7 @@ namespace calc::ast
 
           auto lhs_size = _lhs.size();
           auto vars = _lhs.begin();
-          for (auto i = 0; i < lhs_size; i++)
+          for (auto i = 0; i < output_size; i++)
           {
             setValue(frame, *vars, func_return[i]);
             vars++;
@@ -154,7 +155,7 @@ namespace calc::ast
         }
         else
         {
-          // checa os erros
+          ff.printError();
         }
 
       }

@@ -131,7 +131,7 @@ namespace calc::ast
       }
       else
       {
-        // checa os erros
+        ff.printError();
       }
 
     }

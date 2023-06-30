@@ -76,6 +76,8 @@ FrameFunction::printError()
 	{
 	case 1: // invalid inputs
 		// throw exception? quando usar exception, quando apenas printar na tela
+	case 2: // catch-all error
+		// função não conseguiu executar por motivo não determinado
 	default:
 		break;
 	}

@@ -34,6 +34,7 @@
 #define __FunctionDeclaration_h
 
 #include "ast/Declaration.h"
+#include "ast/FrameFunction.h"
 
 namespace calc
 { // namespace calc

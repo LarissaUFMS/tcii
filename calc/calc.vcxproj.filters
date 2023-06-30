@@ -152,6 +152,12 @@
     <ClInclude Include="include\ast\FrameFunction.h">
       <Filter>Header Files\ast</Filter>
     </ClInclude>
+    <ClInclude Include="include\AddBuiltinFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BuiltinFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parser\ErrorHandler.cpp">
@@ -232,7 +238,7 @@
     <ClCompile Include="src\Built-in functions\Zeroes.cpp">
       <Filter>Source Files\Built-in functions</Filter>
     </ClCompile>
-    <ClCompile Include="src\Built-in functions\AddFunctions.cpp">
+    <ClCompile Include="src\Built-in functions\AddBuiltinFunctions.cpp">
       <Filter>Source Files\Built-in functions</Filter>
     </ClCompile>
   </ItemGroup>

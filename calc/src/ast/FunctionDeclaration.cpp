@@ -36,6 +36,29 @@
 namespace calc::ast
 { // begin namespace calc::ast
 
+  bool check_param(ParameterList& pl)
+  {
+    auto param_itr_i = pl.begin();
+    auto param_itr_j = pl.begin();
+    auto param_end = pl.end();
+    auto& cmp = param_itr_i->name();
+    bool invalid_variable = false;
+
+
+    for (; param_itr_i != param_end && !invalid_variable; param_itr_i++)
+    {
+      for (param_itr_j = param_itr_i; param_itr_j != param_end; param_itr_j++)
+      {
+        if (cmp == param_itr_j->name())
+        {
+          invalid_variable = true;
+          break;
+        }
+      }
+    }
+
+    return invalid_variable;
+  };
 
 /////////////////////////////////////////////////////////////////////
 //
@@ -61,11 +84,11 @@ namespace calc::ast
 
     if (scope->lookupFunction(_name) != nullptr)
     {
-      // o que fazer?
+      // já existe
 
     }
 
-    if (_function == nullptr)
+    if (this->_function == nullptr)
     {
       // erro, sem funcao
     }
@@ -81,31 +104,5 @@ namespace calc::ast
   {
     return JumpCode::NEXT;
   }
-
-  bool check_param(ParameterList& pl)
-  {
-    bool invalid_variable = false;
-
-    auto param_itr_i = pl.begin();
-    auto param_itr_j = pl.begin();
-    auto param_end = pl.end();
-    auto& cmp = param_itr_i->name();
-    bool invalid_variable = false;
-
-
-    for (; param_itr_i != param_end && !invalid_variable; param_itr_i++)
-    {
-      for (param_itr_j = param_itr_i; param_itr_j != param_end; param_itr_j++)
-      {
-        if (cmp == param_itr_j->name())
-        {
-          invalid_variable = true;
-          break;
-        }
-      }
-    }
-
-    return invalid_variable;
-  };
 
 } // end namespace calc::ast

@@ -51,7 +51,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>.;./include;../include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
     </ClCompile>
@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\AddBuiltinFunctions.h" />
     <ClInclude Include="include\AST\Assignment.h" />
     <ClInclude Include="include\AST\AST.h" />
     <ClInclude Include="include\AST\BinaryExpression.h" />
@@ -105,6 +106,7 @@
     <ClInclude Include="include\AST\Transpose.h" />
     <ClInclude Include="include\ast\TypeReference.h" />
     <ClInclude Include="include\AST\UnaryExpression.h" />
+    <ClInclude Include="include\BuiltinFunctions.h" />
     <ClInclude Include="include\Calc.h" />
     <ClInclude Include="include\Frame.h" />
     <ClInclude Include="include\parser\InputBuffer.h" />
@@ -139,7 +141,7 @@
     <ClCompile Include="src\ast\SizeExpression.cpp" />
     <ClCompile Include="src\ast\Transpose.cpp" />
     <ClCompile Include="src\ast\UnaryExpression.cpp" />
-    <ClCompile Include="src\Built-in functions\AddFunctions.cpp" />
+    <ClCompile Include="src\Built-in functions\AddBuiltinFunctions.cpp" />
     <ClCompile Include="src\Built-in functions\Zeroes.cpp" />
     <ClCompile Include="src\Frame.cpp" />
     <ClCompile Include="src\Main.cpp" />
