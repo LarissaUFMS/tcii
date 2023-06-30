@@ -1,6 +1,7 @@
 //#include "MatTest.h"
 #include "ast/ExpressionValue.h"
 #include "Calc.h"
+#include "AddBuiltinFunctions.h"
 
 //
 // Auxiliary function
@@ -27,7 +28,11 @@ main()
   return 0;
   */
   puts("Simple Matrix Calculator Copyright(c), 2023. FACOM-UFMS, TCII guys");
-  for (calc::Calc calc;;)
+
+  calc::Calc calc;
+  calc::ast::addBuiltinFunctions(calc.getGlobalScope());
+
+  for (;;)
   {
     auto input = readLine(">");
 

@@ -70,6 +70,11 @@ public:
     return true;
   }
 
+  GlobalScope* getGlobalScope()
+  {
+    return &_globals;
+  }
+
 private:
   enum
   {
