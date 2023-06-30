@@ -5,6 +5,7 @@
 #include "Matrix.h"
 #include <variant>
 #include <iostream>
+#include <cmath>
 
 using IntMatrix = Matrix<int>;
 using FloatMatrix = Matrix<float>;
@@ -15,468 +16,366 @@ namespace calc
 //
 // Forward definition
 //
-class Writer;
+	class Writer;
 
-namespace ast
-{ // begin namespace ast
+	namespace ast
+	{ // begin namespace ast
 
 
-/////////////////////////////////////////////////////////////////////
-//
-// Expression::Value: expression value class
-// =================
-class Expression::Value
-{
-public:
-  Value():
-	  _type{ Type::Float() },
-	  _value{ FloatMatrix() }
-  {
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Expression::Value: expression value class
+	// =================
+		class Expression::Value
+		{
+		public:
+			Value() :
+				_type{ Type::Float() },
+				_value{ FloatMatrix() }
+			{}
+
+			Value(int v) :
+				_type{ Type::Float() },
+				_value{ FloatMatrix{ static_cast<float>(v) } }
+			{}
+
+			Value(float v) :
+				_type{ Type::Float() },
+				_value{ FloatMatrix{ v } }
+			{}
+
+			Type* type() const
+			{
+				return _type;
+			}
+
+			Value castTo(const Type* other) const
+			{
+				if (this->type() == other)
+				{
+					return *this;
+				}
+
+				Value temp;
+				*temp._type = *other;
+
+				if (other == Type::Int())
+					temp._value = castTo<float, int>();
+				else
+					temp._value = castTo<int, float>();
+
+				return temp;
+			}
+
+			Value operator +(const Value& other) const
+			{
+				typesEqual(other);
+
+				Value temp;
+				temp._type = _type;
+
+				if (_type == Type::Float())
+					temp._value = std::get<FloatMatrix>(_value) + std::get<FloatMatrix>(other._value);
+
+				else
+					temp._value = std::get<IntMatrix>(_value) + std::get<IntMatrix>(other._value);
+
+				return temp;
+			}
+
+			Value operator -(const Value& other) const
+			{
+				typesEqual(other);
+
+				Value temp;
+				temp._type = _type;
+
+				if (_type == Type::Float())
+					temp._value = std::get<FloatMatrix>(_value) - std::get<FloatMatrix>(other._value);
+
+				else
+					temp._value = std::get<IntMatrix>(_value) - std::get<IntMatrix>(other._value);
+
+				return temp;
+			}
+
+			Value operator *(const Value& other) const
+			{
+				typesEqual(other);
+				Value temp;
+				temp._type = _type;
+
+				if (_type == Type::Float())
+					temp._value = std::get<FloatMatrix>(_value) * std::get<FloatMatrix>(other._value);
+
+				else
+					temp._value = std::get<IntMatrix>(_value) * std::get<IntMatrix>(other._value);
+
+				return temp;
+			}
+			//refazer operador / --------------------------------------------------------------------------------------
+			Value operator /(const Value& other) const// refazer ...............................
+			{
+				//#ifdef _DEBUG
+				//	  if (other._value.index() != 2 && other._value.index() != 3)
+				//	  {
+				//		  calc::ErrorHandler errorHandler;
+				//		  errorHandler.error(0, "The divisor must be a real number. Please provide a valid real number as the divisor.");
+				//	  }
+				//#endif // _DEBUG
+				//	  typesEqual(other);
+
+				//	  Value temp;
+				//	  temp._type = _type;
+				//	  if (_type == Type::Float())
+				//	  {
+				//		  temp._value = std::get<FloatMatrix>(_value) * (1 / std::get<float>(other._value));
+				//	  }
+				//	  else
+				//	  {
+				//		  temp._value = std::get<IntMatrix>(_value) * (1 / std::get<int>(other._value));
+				//	  }
+
+				//	  return temp;
+				return *this;
+			} // refazer ...............................
+
+			Value operator -() const
+			{
+				Value temp;
+				temp._type = _type;
+
+				temp._value = std::visit<std::variant<FloatMatrix, IntMatrix>>([](auto&& arg) {
+					return -arg;
+					}, _value);
+
+				return temp;
+			}
+
+			Value size() const
+			{
+				Value temp;
+				temp._type = Type::Int();
+
+				//#ifdef _DEBUG
+				//	  if (_value.index() == 2 || _value.index() == 3)
+				//	  {
+				//		  calc::ErrorHandler errorHandler;
+				//		  errorHandler.error(0, "This is a real number.");
+				//	  }
+				//#endif // _DEBUG
+
+				size_t m, n;
+
+				temp._value = std::visit([&](auto&& arg) {
+					m = arg.rows();
+					n = arg.cols();
+					int data[2]{ int(m), int(n) };
+					return IntMatrix{ 1LLU, 2LLU, data };
+					}, _value);
+
+				return temp;
+			}
+
+			Value transpose() const
+			{
+				Value temp;
+				temp._type = _type;
+
+				temp._value = std::visit<std::variant<FloatMatrix, IntMatrix>>([](auto&& arg) {
+					return arg.transpose();
+					}, _value);
+
+				return temp;
+			}
+
+			Value horzcat(const Value& other) const
+			{
 #ifdef _DEBUG
-	  puts("** Value()**");
-#endif // _DEBUG
-  }
-  Value(int v):
-	  _type{ Type::Float() }
-  {
-#ifdef _DEBUG
-	  puts("** Value(int)**");
-#endif // _DEBUG
-	  _value = static_cast<float>(v);
-	
-  }
-  Value(float v) :
-	  _type{ Type::Float() },
-	  _value { v } 
-  {
-#ifdef _DEBUG
-	  puts("** Value(float)**");
-#endif // _DEBUG}
-  }
-
-  Type* type() const
-  {
-#ifdef _DEBUG
-	  puts("** Value type()**");
-#endif // _DEBUG
-    return _type;
-  }
-
-  Value castTo(const Type* other) const
-  {
-#ifdef _DEBUG
-	  puts("** Value castTo**");
-#endif // _DEBUG
-	  if (this->type() == other)
-	  {
-		  return *this;
-	  }
-
-	  Value temp;
-	  *temp._type = *other;
-
-	  if (other == Type::Int())
-	  {
-		  if (auto v = std::get_if<int>(&_value))
-			  temp._value = static_cast<float>(*v);
-		  else
-			  temp._value = castTo<float, int>();
-	  }
-	  else
-	  {
-		  if (auto v = std::get_if<float>(&_value))
-			  temp._value = static_cast<int>(*v);
-		  else
-			  temp._value = castTo<int, float>();
-	  }
-	  return temp;
-  }
-
-  Value operator +(const Value& other) const
-  {
-#ifdef _DEBUG
-	  puts("** Value operator +(Value&)**");
-#endif // _DEBUG
-	  typesEqual(other);
-
-	  Value temp;
-	  temp._type = _type;
-	  if (_type == Type::Float())
-	  {
-		  if (auto v1 = std::get_if<float>(&_value))
-		  {
-			  if (auto v2 = std::get_if<float>(&other._value))
-				  temp._value = *v1 + *v2;
-			  else
-				  temp._value = std::get<FloatMatrix>(other._value) + *v1;
-		  }
-		  else if (auto v1 = std::get_if<float>(&other._value))
-		  {
-			  if (auto v2 = std::get_if<float>(&_value))
-				  temp._value = *v1 + *v2;
-			  else
-				  temp._value = std::get<FloatMatrix>(_value) + *v1;
-		  }
-		  else
-			temp._value = std::get<FloatMatrix>(_value) + std::get<FloatMatrix>(other._value);
-	  }
-	  else
-	  {
-		  if (auto v1 = std::get_if<int>(&_value))
-		  {
-			  if (auto v2 = std::get_if<int>(&other._value))
-				  temp._value = *v1 + *v2;
-			  else
-				  temp._value = std::get<IntMatrix>(other._value) + *v1;
-		  }
-		  else if (auto v1 = std::get_if<int>(&other._value))
-		  {
-			  if (auto v2 = std::get_if<int>(&_value))
-				  temp._value = *v1 + *v2;
-			  else
-				  temp._value = std::get<IntMatrix>(_value) + *v1;
-		  }
-		  else
-			temp._value = std::get<IntMatrix>(_value) + std::get<IntMatrix>(other._value);
-	  }
-
-	  return temp;
-  }
-
-  Value operator -(const Value& other) const
-  {
-#ifdef _DEBUG
-	  puts("** Value operator -(Value&)**");
-#endif // _DEBUG
-	  typesEqual(other);
-
-	  Value temp;
-	  temp._type = _type;
-	  if (_type == Type::Float())
-	  {
-		  if (auto v1 = std::get_if<float>(&_value))
-		  {
-			  if (auto v2 = std::get_if<float>(&other._value))
-				  temp._value = *v1 - *v2;
-			  else
-				  temp._value = std::get<FloatMatrix>(other._value) - *v1;
-		  }
-		  else if (auto v1 = std::get_if<float>(&other._value))
-		  {
-			  if (auto v2 = std::get_if<float>(&_value))
-				  temp._value = *v1 - *v2;
-			  else
-				  temp._value = std::get<FloatMatrix>(_value) - *v1;
-		  }
-		  else
-			  temp._value = std::get<FloatMatrix>(_value) - std::get<FloatMatrix>(other._value);
-	  }
-	  else
-	  {
-		  if (auto v1 = std::get_if<int>(&_value))
-		  {
-			  if (auto v2 = std::get_if<int>(&other._value))
-				  temp._value = *v1 - *v2;
-			  else
-				  temp._value = std::get<IntMatrix>(other._value) - *v1;
-		  }
-		  else if (auto v1 = std::get_if<int>(&other._value))
-		  {
-			  if (auto v2 = std::get_if<int>(&_value))
-				  temp._value = *v1 - *v2;
-			  else
-				  temp._value = std::get<IntMatrix>(_value) - *v1;
-		  }
-		  else
-			  temp._value = std::get<IntMatrix>(_value) - std::get<IntMatrix>(other._value);
-	  }
-
-	  return temp;
-  }
-
-  Value operator *(const Value& other) const
-  {
-#ifdef _DEBUG
-	  puts("** Value operator *(Value&)**");
-#endif // _DEBUG
-	  typesEqual(other);
-
-	  Value temp;
-	  temp._type = _type;
-	  if (_type == Type::Float())
-	  {
-		  temp._value = std::get<FloatMatrix>(_value) * std::get<FloatMatrix>(other._value);
-	  }
-	  else
-	  {
-		  temp._value = std::get<IntMatrix>(_value) * std::get<IntMatrix>(other._value);
-	  }
-
-	  return temp;
-  }
-  //refazer operador / ..................................................................//
-  Value operator /(const Value& other) const// refazer ...............................
-  {
-	  typesEqual(other);
-
-	  Value temp;
-	  temp._type = _type;
-	  if (_type == Type::Float())
-	  {
-		  temp._value = std::get<FloatMatrix>(_value) * std::get<FloatMatrix>(other._value);
-	  }
-	  else
-	  {
-		  temp._value = std::get<IntMatrix>(_value) * std::get<IntMatrix>(other._value);
-	  }
-
-	  return temp;
-  } // refazer ...............................
-
-  Value operator -() const
-  {
-	  Value temp;
-	  temp._type = _type;
-	  if (_type == Type::Float())
-	  {
-		  temp._value = - std::get<FloatMatrix>(_value);
-	  }
-	  else
-	  {
-		  temp._value = - std::get<IntMatrix>(_value);
-	  }
-
-	  return temp;
-  }
-
-  Value size() const
-  {
-	  Value temp;
-	  temp._type = Type::Int();
-
-	  int m, n;
-	  if (_type == Type::Float())
-	  {
-		  m = std::get<FloatMatrix>(_value).rows();
-		  n = std::get<FloatMatrix>(_value).cols();
-	  }
-	  else
-	  {
-		  m = std::get<IntMatrix>(_value).rows();
-		  n = std::get<IntMatrix>(_value).cols();
-	  }
-
-	  int data[2]{m, n};
-	  temp._value = IntMatrix{ static_cast<size_t>(1), static_cast < size_t>(2), data};
-
-	  return temp;
-  }
-
-  Value transpose() const
-  {
-	  Value temp;
-	  temp._type = _type;
-
-	  if (_type == Type::Float())
-	  {
-		  temp._value = std::get<FloatMatrix>(_value).transpose();
-	  }
-	  else
-	  {
-		  temp._value = std::get<IntMatrix>(_value).transpose();
-	  }
-	  return temp;
-  }
-
-  Value horzcat(const Value& other) const
-  {
-#ifdef _DEBUG
-	  puts("** horzcat(Value&)**");
+				puts("** horzcat(Value&)**");
 #endif // _DEBUG
 
-	  Value temp;
-	  temp._type = _type;
-	  typesEqual(other);
-	  if (_type == Type::Float())
-	  {
-		  if (auto v = get_if<float>(&other._value))
-			  temp._value = std::get<FloatMatrix>(_value).horzcat(*v);
-		  else
-			temp._value = std::get<FloatMatrix>(_value).horzcat(std::get<FloatMatrix>(other._value));
-	  }
-	  else
-	  {
-		  if (auto v = get_if<int>(&other._value))
-			  temp._value = std::get<IntMatrix>(_value).horzcat(*v);
-		  else
-			  temp._value = std::get<IntMatrix>(_value).horzcat(std::get<IntMatrix>(other._value));
-	  }
-	  return temp;
-  }
+				typesEqual(other);
 
-  Value vertcat(const Value& other) const
-  {
+				Value temp;
+				temp._type = _type;
+
+				if (_type == Type::Float())
+					temp._value = std::get<FloatMatrix>(_value).horzcat(std::get<FloatMatrix>(other._value));
+
+				else
+					temp._value = std::get<IntMatrix>(_value).horzcat(std::get<IntMatrix>(other._value));
+
+				return temp;
+			}
+
+			Value vertcat(const Value& other) const
+			{
 #ifdef _DEBUG
-	  puts("** Value vertcat(Value&)**");
+				puts("** Value vertcat(Value&)**");
 #endif // _DEBUG
 
-	  Value temp;
-	  temp._type = _type;
+				Value temp;
+				temp._type = _type;
+				typesEqual(other);
 
-	  typesEqual(other);
-	  if (_type == Type::Float())
-	  {
-		  temp._value = std::get<FloatMatrix>(_value).vertcat(std::get<FloatMatrix>(other._value));
+				if (_type == Type::Float())
+					temp._value = std::get<FloatMatrix>(_value).vertcat(std::get<FloatMatrix>(other._value));
 
-	  }
-	  else
-	  {
-		  temp._value = std::get<IntMatrix>(_value).vertcat(std::get<IntMatrix>(other._value));
-	  }
-	  return temp;
-  }
+				else
+					temp._value = std::get<IntMatrix>(_value).vertcat(std::get<IntMatrix>(other._value));
 
-  //refazer métodos abaixo / ..................................................................//
-  Value operator ()(const Value&) const
-  {
-	  return *this;
-  }
-  Value operator ()(const Value&, const Value&) const
-  {
-	  return *this;
-  }
+				return temp;
+			}
 
-  Value rows(const Value&) const
-  {
-	  return *this;
-  }
-  Value cols(const Value&) const
-  {
-	  return *this;
-  }
-  Value vector() const
-  {
-	  return *this;
-  }
-  void set(const Value&, const Value&)
-  {
-	  ;
-  }
-  void set(const Value&, const Value&, const Value&) 
-  {
-	  ;
-  }
-  void setRows(const Value&, const Value&)
-  {
-	  ;
-  }
-  void setCols(const Value&, const Value&)
-  {
-	  ;
-  }
-  void setVector(const Value&)
-  {
-	  ;
-  }
+			//refazer métodos abaixo / ..................................................................//
+			Value operator ()(const Value&) const
+			{
 
-  void write(Writer& w) const
-  {
-	  if (auto v = std::get_if<int>(&_value))
-	  {
-		  std::cout << *v;
-	  }
-	  else if (auto v = std::get_if<float>(&_value))
-	  {
-		  std::cout << *v;
-	  }
-	  else if (auto floatMatrix = std::get_if<FloatMatrix>(&this->_value))
-	  {
-		  auto m = floatMatrix->rows();
-		  auto n = floatMatrix->cols();
+				return *this;
+			}
+			Value operator ()(const Value&, const Value&) const
+			{
+				return *this;
+			}
 
-		  if (m == 0)
-		  {
-			  std::cout << "[]";
-			  return;
-		  }
+			Value rows(const Value&) const
+			{
+				return *this;
+			}
+			Value cols(const Value&) const
+			{
+				return *this;
+			}
+			Value vector() const
+			{
+				return *this;
+			}
+			void set(const Value&, const Value&)
+			{
+				;
+			}
+			void set(const Value&, const Value&, const Value&)
+			{
+				;
+			}
+			void setRows(const Value&, const Value&)
+			{
+				;
+			}
+			void setCols(const Value&, const Value&)
+			{
+				;
+			}
+			void setVector(const Value&)
+			{
+				;
+			}
 
-		  for (size_t i{}; i < m; ++i)
-		  {
-			  auto aux = i* n;
-			  for (size_t j{}; j < n; ++j)
-				  std::cout << floatMatrix->_data[ aux + j] << ',' ;
-			  std::cout << '\n';
-		  }
-	  }
-	  else
-	  {
-		  auto intMatrix = std::get_if<IntMatrix>(&this->_value);
+			void write(Writer& w) const
+			{
+				std::visit([](auto&& arg) {
+					auto m = arg.rows();
+					auto n = arg.cols();
 
-		  auto m = intMatrix->rows();
-		  auto n = intMatrix->cols();
+					if (m == 0 && arg._data != nullptr)
+						std::cout << arg._data[0] << '\n';
+					else if (m == 0)
+						std::cout << "[] \n";
+					else
+					{
+						std::cout << "Matrix: \n";
+						for (size_t i{}; i < m; ++i)
+						{
+							auto aux = i * n;
+							for (size_t j{}; j < n; ++j)
+								std::cout << arg._data[aux + j] << ' ';
+							std::cout << '\n';
+						}
+					}
+					}, _value);
+			}
 
-		  for (size_t i{}; i < m; ++i)
-		  {
-			  auto aux = i * n;
-			  for (size_t j{}; j < n; ++j)
-				  std::cout << intMatrix->_data[aux + j] << ',';
-			  std::cout << '\n';
-		  }
-	  }
-  }
+			static Value colon(const Value& a, const Value& b, const Value& c)
+			{
+				Value temp;
+				temp._type = a._type;
 
-  static Value colon(const Value& a, const Value& b, const Value& c)
-  {
-	  return a;
-  }
-private:
-  Type* _type;
-  std::variant<FloatMatrix, IntMatrix, int, float> _value;
+				/*if (a._value.index() == 2)
+				{
+					int start = std::get<int>(a._value);
+					int end = std::get<int>(b._value);
+					int increment = std::get<int>(c._value);
 
-  /*template <typename T> Value(const Matrix<T>&);
+					size_t col = size_t(std::abs((start - end) / increment));
 
-  //Size valueSize() const;
-  template <typename T> Matrix<T> castTo() const;
-  Value block(const IntMatrix&, const IntMatrix&) const;
-  template <template <typename T> typename Op> Value bop(const Value&) const;
+					int* data = new int[col];
 
-  template <typename T> Matrix<T>& get();
-  void setBlock(const IntMatrix&, const IntMatrix&, const Value&);*/
+					for (int index{}, int value{ start }; value <= end; value += increment)
+					{
+						data[index] = value;
+					}
+					IntMatrix m{ 1LLU, col, data };
+					temp._value = m;
+					return temp;
+				}*/
+				return a;
+			}
 
-  template <typename Tcurrent, typename Tcast>
-  Matrix<Tcast> castTo() const
-  {
-	  Matrix<Tcurrent> tempCurrent = std::get<Matrix<Tcurrent>>(this->_value);
-	  Tcurrent* dataCurrentPtr = tempCurrent.data();
-	  auto m = tempCurrent.rows();
-	  auto n = tempCurrent.cols();
-	  Tcast* dataCast = new Tcast[m * n];
-	  for (size_t s = m * n, i{}; i < s; ++i)
-		  dataCast[i] = static_cast<Tcast>(dataCurrentPtr[i]);
-	  Matrix<Tcast> tempCast(m, n, dataCast);
-	  std::cout << "Type of Tcast: " << typeid(Tcast).name() << std::endl;
-	  std::cout << "Type of dataCast: " << typeid(*dataCast).name() << std::endl;
-	  return tempCast;
-  }
 
-  template <typename T>
-  Matrix<T> get() const
-  {
-    return const_cast<Value*>(this)->get<T>();
-  }
+		private:
+			Type* _type;
+			std::variant<FloatMatrix, IntMatrix> _value;
 
-  void typesEqual(const Value& other) const
-  {
-	  if (_type != other._type)
-	  {
-		  other.castTo(Type::Float());
-		  castTo(Type::Float());
-	  }
-  }
+			/*template <typename T> Value(const Matrix<T>&);
 
-}; // Expression::Value
+			//Size valueSize() const;
+			template <typename T> Matrix<T> castTo() const;
+			Value block(const IntMatrix&, const IntMatrix&) const;
+			template <template <typename T> typename Op> Value bop(const Value&) const;
 
-} // end namespace ast
+			template <typename T> Matrix<T>& get();
+			void setBlock(const IntMatrix&, const IntMatrix&, const Value&);*/
+
+			template <typename Tcurrent, typename Tcast>
+			Matrix<Tcast> castTo() const
+			{
+				Matrix<Tcurrent> tempCurrent = std::get<Matrix<Tcurrent>>(this->_value);
+				Tcurrent* dataCurrentPtr = tempCurrent.data();
+				auto m = tempCurrent.rows();
+				auto n = tempCurrent.cols();
+				if (m == 0 && dataCurrentPtr != nullptr)
+				{
+					Matrix<Tcast> tempCast{static_cast<Tcast>(dataCurrentPtr[0])};
+					return tempCast;
+				}
+				Tcast* dataCast = new Tcast[m * n];
+				for (size_t s = m * n, i{}; i < s; ++i)
+					dataCast[i] = static_cast<Tcast>(dataCurrentPtr[i]);
+				Matrix<Tcast> tempCast(m, n, dataCast);
+				std::cout << "Type of Tcast: " << typeid(Tcast).name() << std::endl;
+				std::cout << "Type of dataCast: " << typeid(*dataCast).name() << std::endl;
+				return tempCast;
+			}
+
+			template <typename T>
+			Matrix<T> get() const
+			{
+				return const_cast<Value*>(this)->get<T>();
+			}
+
+			void typesEqual(const Value& other) const
+			{
+				if (_type != other._type)
+				{
+					other.castTo(Type::Float());
+					castTo(Type::Float());
+				}
+			}
+
+		}; // Expression::Value
+
+	} // end namespace ast
 
 } // end namespace calc
 

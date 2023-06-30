@@ -50,6 +50,16 @@ public:
 
     Matrix() = default;
 
+    Matrix(float v)
+    {
+        _data = new float[1]{v};
+    }
+
+    Matrix(int v)
+    {
+        _data = new int[1]{ v };
+    }
+
     Matrix(size_t m, size_t n):
         _m{m}, _n{n}
     {
@@ -126,7 +136,7 @@ public:
     Matrix vertcat(const Matrix&) const;
 
     Matrix horzcat(const T&) const;
-    Matrix vertcat(const T&) const;
+    //Matrix vertcat(const T&) const;
 
     Matrix& row(int i) const;
     Matrix& col(int j) const;
@@ -136,7 +146,7 @@ public:
 private:
     size_t _m{};
     size_t _n{};
-    T* _data{};
+    T* _data{nullptr};
 
 }; // end class Matrix
 
@@ -144,9 +154,6 @@ template <typename T>
 Matrix<T>::Matrix(const Matrix& other) :
     Matrix{ other._m, other._n }
 {
-#ifdef _DEBUG
-    puts("**Matrix copy ctor**");
-#endif // _DEBUG
     for (size_t s = _m * _n, i = 0; i < s; ++i)
         _data[i] = other._data[i];
 }
@@ -154,9 +161,6 @@ Matrix<T>::Matrix(const Matrix& other) :
 template <typename T>
 Matrix<T>::Matrix(Matrix&& other) noexcept
 {
-#ifdef _DEBUG
-    puts("**Matrix move ctor**");
-#endif // _DEBUG
     _m = other._m;
     _n = other._n;
     _data = other._data;
@@ -168,9 +172,6 @@ template <typename T>
 Matrix<T>&
 Matrix<T>::operator =(const Matrix& other)
 {
-#ifdef _DEBUG
-    puts("**Matrix copy op**");
-#endif // _DEBUG
     if (_m != other._m || _n != other._n)
     {
         delete[]_data;
@@ -187,9 +188,6 @@ template <typename T>
 Matrix<T>&
 Matrix<T>::operator =(Matrix&& other) noexcept
 {
-#ifdef _DEBUG
-    puts("**Matrix move op**");
-#endif // _DEBUG
     delete[]_data;
     _m = other._m;
     _n = other._n;
@@ -236,6 +234,15 @@ template <typename T>
 Matrix<T>
 Matrix<T>::operator +(const Matrix& b) const
 {
+    if (b._m == 0)
+    {
+        if (_m == 0)
+            return Matrix{ _data[0] + b._data[0] };
+        return *this + b._data[0];
+    }   
+    if (_m == 0)
+        return b + _data[0];
+      
 #ifdef _DEBUG
     if (_m != b._m || _n != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
@@ -252,6 +259,14 @@ template <typename T>
 Matrix<T>
 Matrix<T>::operator -(const Matrix& b) const
 {
+    if (b._m == 0)
+    {
+        if (_m == 0)
+            return Matrix{ _data[0] - b._data[0] };
+        return *this - b._data[0];
+    }
+    if (_m == 0)
+        return b - _data[0];
 #ifdef _DEBUG
     if (_m != b._m || _n != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
@@ -268,8 +283,16 @@ template <typename T>
 Matrix<T>
 Matrix<T>::operator *(const Matrix& b) const
 {
+    if (b._m == 0)
+    {
+        if (_m == 0)
+            return Matrix{ _data[0] * b._data[0] };
+        return *this * b._data[0];
+    }
+    if (_m == 0)
+        return b * _data[0];
+
 #ifdef _DEBUG
-    puts("** Matrix operator*(Matrix)");
     if (_m != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
@@ -280,7 +303,7 @@ Matrix<T>::operator *(const Matrix& b) const
     {
         for (size_t j = 0; j < b._n; j++)
         {
-            c._data[i * b._n + j] = 0;
+            c._data[i * c._n + j] = 0;
             for (size_t k = 0; k < _n; k++)
                 c._data[i * b._n + j] += _data[i * _n + k] * b._data[k * b._n + j];
         }
@@ -345,8 +368,9 @@ template <typename T>
 Matrix<T>
 Matrix<T>::horzcat(const Matrix& b) const
 {
-
-    if (_m == 0)
+    if (b._m == 0)
+        return this->horzcat(b._data[0]);
+    if (_m == 0 )
         return b;
 #ifdef _DEBUG
     if (_m != b._m )
@@ -445,7 +469,7 @@ template <typename T>
 void
 Matrix<T>::iterate(IterFunc f) const
 {
-    Element e;
+    Element e{};
 
     e.i = 0;
     for (int p = 0; e.i < _m; ++e.i)
