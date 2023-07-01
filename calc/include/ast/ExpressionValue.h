@@ -44,6 +44,18 @@ namespace calc
 				_value{ FloatMatrix{ v } }
 			{}
 
+			template <typename T> Value(const Matrix<T>& m)
+			{
+				static_assert(std::is_same<T, int>::value || std::is_same<T, float>::value);
+
+				if (std::is_same<T, int>::value)
+					_type = Type::Int();
+				else
+					_type = Type::Float();
+
+				_value = m;
+			}
+
 			Type* type() const
 			{
 				return _type;
@@ -60,9 +72,9 @@ namespace calc
 				*temp._type = *other;
 
 				if (other == Type::Int())
-					temp._value = castTo<float, int>();
+					temp._value = std::get<FloatMatrix>(_value).castTo<int>();
 				else
-					temp._value = castTo<int, float>();
+					temp._value = std::get<IntMatrix>(_value).castTo<float>();
 
 				return temp;
 			}
@@ -113,31 +125,15 @@ namespace calc
 
 				return temp;
 			}
-			//refazer operador / --------------------------------------------------------------------------------------
+
 			Value operator /(const Value& other) const// refazer ...............................
 			{
-				//#ifdef _DEBUG
-				//	  if (other._value.index() != 2 && other._value.index() != 3)
-				//	  {
-				//		  calc::ErrorHandler errorHandler;
-				//		  errorHandler.error(0, "The divisor must be a real number. Please provide a valid real number as the divisor.");
-				//	  }
-				//#endif // _DEBUG
-				//	  typesEqual(other);
-
-				//	  Value temp;
-				//	  temp._type = _type;
-				//	  if (_type == Type::Float())
-				//	  {
-				//		  temp._value = std::get<FloatMatrix>(_value) * (1 / std::get<float>(other._value));
-				//	  }
-				//	  else
-				//	  {
-				//		  temp._value = std::get<IntMatrix>(_value) * (1 / std::get<int>(other._value));
-				//	  }
-
-				//	  return temp;
-				return *this;
+				Value temp;
+				temp._type = _type;
+				temp._value = std::visit<std::variant<FloatMatrix, IntMatrix>>([](auto&& arg1, auto&& arg2) {
+					return arg1 / arg2;
+					}, _value, other._value);
+				return temp;
 			} // refazer ...............................
 
 			Value operator -() const
@@ -191,9 +187,6 @@ namespace calc
 
 			Value horzcat(const Value& other) const
 			{
-#ifdef _DEBUG
-				puts("** horzcat(Value&)**");
-#endif // _DEBUG
 
 				typesEqual(other);
 
@@ -211,10 +204,6 @@ namespace calc
 
 			Value vertcat(const Value& other) const
 			{
-#ifdef _DEBUG
-				puts("** Value vertcat(Value&)**");
-#endif // _DEBUG
-
 				Value temp;
 				temp._type = _type;
 				typesEqual(other);
@@ -228,12 +217,17 @@ namespace calc
 				return temp;
 			}
 
-			//refazer métodos abaixo / ..................................................................//
-			Value operator ()(const Value&) const
+			Value operator ()(const Value& other) const
 			{
+				Value temp;
+				temp._type = _type;
+				temp._value = std::visit<std::variant<FloatMatrix, IntMatrix>>([&other](auto&& arg) {
+					return arg(std::get<IntMatrix>((other.castTo(Type::Int())._value)));
+					}, _value);
 
-				return *this;
+				return temp;
 			}
+
 			Value operator ()(const Value&, const Value&) const
 			{
 				return *this;
@@ -277,7 +271,6 @@ namespace calc
 				std::visit([](auto&& arg) {
 					auto m = arg.rows();
 					auto n = arg.cols();
-
 					if (m == 0 && arg._data != nullptr)
 						std::cout << arg._data[0] << '\n';
 					else if (m == 0)
@@ -300,45 +293,21 @@ namespace calc
 			{
 				Value temp;
 				temp._type = a._type;
-
-				/*if (a._value.index() == 2)
-				{
-					int start = std::get<int>(a._value);
-					int end = std::get<int>(b._value);
-					int increment = std::get<int>(c._value);
-
-					size_t col = size_t(std::abs((start - end) / increment));
-
-					int* data = new int[col];
-
-					for (int index{}, int value{ start }; value <= end; value += increment)
-					{
-						data[index] = value;
-					}
-					IntMatrix m{ 1LLU, col, data };
-					temp._value = m;
-					return temp;
-				}*/
-				return a;
-			}
-
-			template <typename T> Value(const Matrix<T>& m)
-			{
-				static_assert(std::is_same<T, int>::value || std::is_same<T, float>::value);
-
-				if (std::is_same<T, int>::value)
-					_type = Type::Int();
+				if (a._type == Type::Float())
+					temp._value = FloatMatrix::colon(std::get<FloatMatrix>(a._value), std::get<FloatMatrix>(b._value), std::get<FloatMatrix>(c._value));
 				else
-					_type = Type::Float();
-
-				_value = m;
+					temp._value = IntMatrix::colon(std::get<IntMatrix>(a._value), std::get<IntMatrix>(b._value), std::get<IntMatrix>(c._value));
+				return temp;
 			}
+
 
 		private:
 			Type* _type;
 			std::variant<FloatMatrix, IntMatrix> _value;
 
-			/*Size valueSize() const;
+			/*template <typename T> Value(const Matrix<T>&);
+
+			//Size valueSize() const;
 			template <typename T> Matrix<T> castTo() const;
 			Value block(const IntMatrix&, const IntMatrix&) const;
 			template <template <typename T> typename Op> Value bop(const Value&) const;
@@ -346,10 +315,10 @@ namespace calc
 			template <typename T> Matrix<T>& get();
 			void setBlock(const IntMatrix&, const IntMatrix&, const Value&);*/
 
-			template <typename Tcurrent, typename Tcast>
+			/*template <typename Tcurrent, typename Tcast>
 			Matrix<Tcast> castTo() const
 			{
-				Matrix<Tcurrent> tempCurrent = std::get<Matrix<Tcurrent>>(this->_value);
+				Matrix<Tcurrent> tempCurrent{std::get<Matrix<Tcurrent>>(this->_value)};
 				Tcurrent* dataCurrentPtr = tempCurrent.data();
 				auto m = tempCurrent.rows();
 				auto n = tempCurrent.cols();
@@ -365,7 +334,7 @@ namespace calc
 				std::cout << "Type of Tcast: " << typeid(Tcast).name() << std::endl;
 				std::cout << "Type of dataCast: " << typeid(*dataCast).name() << std::endl;
 				return tempCast;
-			}
+			}*/
 
 			template <typename T>
 			Matrix<T> get() const

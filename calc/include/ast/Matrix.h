@@ -52,26 +52,23 @@ public:
 
     Matrix(float v)
     {
-        _data = new float[1]{v};
+        _data = new float[1] {v};
     }
 
     Matrix(int v)
     {
-        _data = new int[1]{ v };
+        _data = new int[1] { v };
     }
 
-    Matrix(size_t m, size_t n):
-        _m{m}, _n{n}
+    Matrix(size_t m, size_t n) :
+        _m{ m }, _n{ n }
     {
         _data = new T[m * n];
     }
 
-    Matrix(size_t m, size_t n, T* data):
-        _m{m}, _n{n}
+    Matrix(size_t m, size_t n, T* data) :
+        _m{ m }, _n{ n }
     {
-#ifdef _DEBUG
-        puts("**Matrix(size_t m, size_t n, T* data)**");
-#endif // _DEBUG
         _data = new T[_m * _n];
         for (size_t s = _m * _n, i{}; i < s; ++i)
             _data[i] = data[i];
@@ -93,6 +90,12 @@ public:
     auto cols() const
     {
         return _n;
+    }
+
+    Matrix<T> operator ()(const Matrix<int>& m) const
+    {
+        Matrix<T> matrix(_data[m.data()[0]]);
+        return matrix;
     }
 
     auto& operator ()(int i, int j)
@@ -123,13 +126,19 @@ public:
     Matrix operator -(const Matrix&) const;
     Matrix operator *(const Matrix&) const;
 
+    template<typename U>
+    Matrix<T> operator /(const Matrix<U>&) const;
+
     Matrix operator +(const T&) const;
     Matrix operator -(const T&) const;
-    Matrix operator *(const T&) const;
+
+    template<typename U>
+    Matrix operator *(const U&) const;
 
     Matrix operator -() const;
 
-    //Matrix castTo();
+    template <typename Tcast>
+    Matrix<Tcast> castTo() const;
 
     Matrix transpose() const;
     Matrix horzcat(const Matrix&) const;
@@ -143,12 +152,18 @@ public:
 
     T* data() const;
 
+    static Matrix colon(const Matrix&, const Matrix&, const Matrix&);
+
 private:
     size_t _m{};
     size_t _n{};
-    T* _data{nullptr};
+    T* _data{ nullptr };
 
 }; // end class Matrix
+
+
+using IntMatrix = Matrix<int>;
+using FloatMatrix = Matrix<float>;
 
 template <typename T>
 Matrix<T>::Matrix(const Matrix& other) :
@@ -239,10 +254,10 @@ Matrix<T>::operator +(const Matrix& b) const
         if (_m == 0)
             return Matrix{ _data[0] + b._data[0] };
         return *this + b._data[0];
-    }   
+    }
     if (_m == 0)
         return b + _data[0];
-      
+
 #ifdef _DEBUG
     if (_m != b._m || _n != b._n)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
@@ -293,7 +308,7 @@ Matrix<T>::operator *(const Matrix& b) const
         return b * _data[0];
 
 #ifdef _DEBUG
-    if (_m != b._n)
+    if (_n != b._m)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
 
@@ -328,16 +343,6 @@ Matrix<T>::operator -(const T& t) const
 {
     return *this + (-t);
 }
-template <typename T>
-Matrix<T>
-Matrix<T>::operator *(const T& t) const
-{
-    Matrix c{ _m, _n };
-
-    for (size_t s = _m * _n, i{}; i < s; ++i)
-        c._data[i] = _data[i] * t;
-    return c;
-}
 
 template <typename T>
 Matrix<T>
@@ -349,6 +354,49 @@ Matrix<T>::operator -() const
         c._data[i] = -_data[i];
     return c;
 }
+
+template<typename T>
+template<typename U>
+inline Matrix<T> Matrix<T>::operator/(const Matrix<U>& d) const
+{
+    if (_m == 0)
+    {
+        T v = _data[0] / static_cast<T>(d.data()[0]);
+        Matrix<T> m{v};
+        return m;
+    }
+
+    return *this * (1 / d.data()[0]);
+}
+
+template<typename T>
+template<typename U>
+inline Matrix<T> Matrix<T>::operator*(const U& u) const
+{
+    Matrix<T> c{ _m, _n };
+
+    for (size_t s = _m * _n, i{}; i < s; ++i)
+        c._data[i] = static_cast<T>(_data[i] * u);
+
+    return c;
+}
+
+template<typename T>
+template<typename Tcast>
+inline Matrix<Tcast> Matrix<T>::castTo() const
+{
+    if (_m == 0 && _data != nullptr)
+    {
+        Tcast tempCast{ static_cast<Tcast>(data()[0]) };
+        return tempCast;
+    }
+    Matrix<Tcast> tempCast(_m, _n);
+    for (size_t s = _m * _n, i{}; i < s; ++i)
+        tempCast.data()[i] = static_cast<Tcast>(data()[i]);
+
+    return tempCast;
+}
+
 
 template <typename T>
 Matrix<T>
@@ -370,16 +418,16 @@ Matrix<T>::horzcat(const Matrix& b) const
 {
     if (b._m == 0)
         return this->horzcat(b._data[0]);
-    if (_m == 0 )
+    if (_m == 0)
         return b;
 #ifdef _DEBUG
-    if (_m != b._m )
+    if (_m != b._m)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
 #endif //_DEBUG
-    
-    Matrix c{_m, _n + b._n};
+
+    Matrix c{ _m, _n + b._n };
     size_t r, k;
-    
+
     for (size_t i{}; i < _m; ++i)
     {
         r = i * (_n + b._n);
@@ -388,7 +436,7 @@ Matrix<T>::horzcat(const Matrix& b) const
         {
             c._data[r + j] = _data[k + j];
         }
-        
+
         r = i * (_n + b._n) + _n;
         k = i * b._n;
         for (size_t j{}; j < b._n; ++j)
@@ -403,7 +451,8 @@ template <typename T>
 Matrix<T>
 Matrix<T>::vertcat(const Matrix& b) const
 {
-
+    if (_m == 0)
+        return b;
 #ifdef _DEBUG
     if (_n != b._n && _m != 0)
         matrixDimensionMustAgree(_m, _n, b._m, b._n);
@@ -414,7 +463,7 @@ Matrix<T>::vertcat(const Matrix& b) const
     for (size_t s = _m * _n, i{}; i < s; ++i)
         c._data[i] = _data[i];
 
-    for (size_t s = b._m * b._n, i{}, k{_m * _n}; i < s; ++i, ++k)
+    for (size_t s = b._m * b._n, i{}, k{ _m * _n }; i < s; ++i, ++k)
         c._data[k] = b._data[i];
     return c;
 }
@@ -425,7 +474,7 @@ Matrix<T>::horzcat(const T& b) const
 {
     if (_m == 0)
     {
-        T data[1]{ b };
+        T data[1] = { b };
         Matrix c{ 1, 1, data };
         return c;
     }
@@ -485,5 +534,18 @@ T*
 Matrix<T>::data() const
 {
     return _data;
+}
+
+template<typename T>
+inline Matrix<T> Matrix<T>::colon(const Matrix& a, const Matrix& b, const Matrix& c)
+{
+    size_t n = size_t((b._data[0] - a._data[0]) / c._data[0]);
+
+    Matrix<T> temp(1LLU, n + 1);
+
+    for (int i{}; i <= n; ++i)
+        temp._data[i] = a._data[0] + i * c._data[0];
+
+    return temp;
 }
 #endif // __Matrix_h
