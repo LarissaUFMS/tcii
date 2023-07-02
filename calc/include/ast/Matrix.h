@@ -137,11 +137,6 @@ public:
         return _data[i * _n + j];
     }
 
-    /*T operator ()(int i, int j) const
-    {
-        return const_cast<T*>(this)->operator ()(i, j);
-    }*/
-
     Matrix& operator =(const Matrix&);
     Matrix& operator =(Matrix&&) noexcept;
 
@@ -164,6 +159,23 @@ public:
     Matrix operator *(const U&) const;
 
     Matrix operator -() const;
+
+    Matrix<T> set(const Matrix<int>& m1, const Matrix<T>& m2)
+    {
+        if (m1.cols() > 1)
+        {
+            for (int i{}; i < m1.cols(); ++i)
+            {
+                if (m2.cols() < 2)
+                    _data[m1.data()[i]] = m2.data()[0];
+                else
+                    _data[m1.data()[i]] = m2.data()[i];
+            }
+            return *this;
+        }
+        _data[m1.data()[0]] = m2.data()[0];
+        return *this;
+    }
 
     template <typename Tcast>
     Matrix<Tcast> castTo() const;

@@ -126,7 +126,7 @@ namespace calc
 				return temp;
 			}
 
-			Value operator /(const Value& other) const// refazer ...............................
+			Value operator /(const Value& other) const
 			{
 				Value temp;
 				temp._type = _type;
@@ -134,7 +134,7 @@ namespace calc
 					return arg1 / arg2;
 					}, _value, other._value);
 				return temp;
-			} // refazer ...............................
+			} 
 
 			Value operator -() const
 			{
@@ -152,14 +152,6 @@ namespace calc
 			{
 				Value temp;
 				temp._type = Type::Int();
-
-				//#ifdef _DEBUG
-				//	  if (_value.index() == 2 || _value.index() == 3)
-				//	  {
-				//		  calc::ErrorHandler errorHandler;
-				//		  errorHandler.error(0, "This is a real number.");
-				//	  }
-				//#endif // _DEBUG
 
 				size_t m, n;
 
@@ -268,25 +260,39 @@ namespace calc
 
 			Value vector() const
 			{
-				return *this;
+				return std::visit([](auto&& arg) {
+					using M = std::decay_t<decltype(arg)>;
+					M matrix{ 1LLU, arg.rows() * arg.cols(), arg.data() };
+					Value temp{ matrix };
+					return temp;
+					}, _value);
 			}
 
-			void set(const Value&, const Value&)
+			void set(const Value& v1, const Value& v2)
 			{
-				;
+				(*this).typesEqual(v2);
+
+				if (_type == Type::Float())
+					std::get<FloatMatrix>(_value).set(std::get<IntMatrix>((v1.castTo(Type::Int()))._value), std::get<FloatMatrix>(v2._value));
+				else
+					std::get<IntMatrix>(_value).set(std::get<IntMatrix>((v1.castTo(Type::Int()))._value), std::get<IntMatrix>(v2._value));
 			}
+
 			void set(const Value&, const Value&, const Value&)
 			{
 				;
 			}
+
 			void setRows(const Value&, const Value&)
 			{
 				;
 			}
+
 			void setCols(const Value&, const Value&)
 			{
 				;
 			}
+
 			void setVector(const Value&)
 			{
 				;
