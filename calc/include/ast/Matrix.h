@@ -94,11 +94,38 @@ public:
 
     Matrix<T> operator ()(const Matrix<int>& m) const
     {
+        if (m.cols() > 1)
+        {
+            Matrix<T> matrix(1LLU, m.cols());
+            for (int i{}; i < m.cols(); ++i)
+            {
+                matrix._data[i] = _data[m.data()[i]];
+            }
+            return matrix;
+        }
         Matrix<T> matrix(_data[m.data()[0]]);
         return matrix;
     }
 
-    auto& operator ()(int i, int j)
+    Matrix<T> operator ()(const Matrix<int>& m1, const Matrix<int>& m2) const
+    {
+        Matrix matrix{ m1.cols(), m2.cols() };
+        if (m1.cols() == 0 && m1.data() != nullptr)
+            matrix._m = 1LLU;
+        if (m2.cols() == 0 && m2.data() != nullptr)
+            matrix._n = 1LLU;
+        if (m1.cols() * m2.cols() != matrix._m * matrix._n)
+            matrix._data = new T[matrix._m * matrix._n];
+
+        for (size_t i{}; i < matrix._m; ++i)
+        {
+            for (size_t j{}; j < matrix._n; ++j)
+                matrix._data[i * matrix._n + j] = (*this)._data[(m1.data()[i] * _n + m2.data()[j])];
+        }
+        return matrix;
+    }
+
+    T& operator ()(int i, int j)
     {
 #ifdef _DEBUG
         if (i < 0 || i >= _m)
@@ -106,13 +133,14 @@ public:
         if (j < 0 || j >= _n)
             matrixIndexOutOfRange(MatrixIndexType::Col, j, _n);
 #endif // _DEBUG
+
         return _data[i * _n + j];
     }
 
-    auto operator ()(int i, int j) const
+    /*T operator ()(int i, int j) const
     {
-        return const_cast<Matrix*>(this)->operator ()(i, j);
-    }
+        return const_cast<T*>(this)->operator ()(i, j);
+    }*/
 
     Matrix& operator =(const Matrix&);
     Matrix& operator =(Matrix&&) noexcept;

@@ -228,23 +228,49 @@ namespace calc
 				return temp;
 			}
 
-			Value operator ()(const Value&, const Value&) const
+			Value operator ()(const Value& otherRows, const Value& otherCols) const
 			{
-				return *this;
+				Value temp;
+				temp._type = _type;
+				temp._value = std::visit<std::variant<FloatMatrix, IntMatrix>>([&otherRows, &otherCols](auto&& arg) {
+					return arg(std::get<IntMatrix>(otherRows.castTo(Type::Int())._value),
+					std::get<IntMatrix>(otherCols.castTo(Type::Int())._value));
+					}, _value);
+
+				return temp;
 			}
 
-			Value rows(const Value&) const
+			Value rows(const Value& other) const
 			{
-				return *this;
+				return std::visit([&](auto&& arg) {
+
+					IntMatrix row{ 1LLU, arg.cols() };
+					for (int i{}; i < arg.cols(); ++i)
+						row.data()[i] = i;
+					Value rowV{ row };
+					return (*this)(other, rowV);
+
+					}, _value);
 			}
-			Value cols(const Value&) const
+
+			Value cols(const Value& other) const
 			{
-				return *this;
+				return std::visit([&](auto&& arg) {
+
+					IntMatrix col{ 1LLU, arg.rows() };
+					for (int i{}; i < arg.rows(); ++i)
+						col.data()[i] = i;
+					Value colV{ col };
+					return (*this)(colV, other);
+
+					}, _value);
 			}
+
 			Value vector() const
 			{
 				return *this;
 			}
+
 			void set(const Value&, const Value&)
 			{
 				;
@@ -304,37 +330,6 @@ namespace calc
 		private:
 			Type* _type;
 			std::variant<FloatMatrix, IntMatrix> _value;
-
-			/*template <typename T> Value(const Matrix<T>&);
-
-			//Size valueSize() const;
-			template <typename T> Matrix<T> castTo() const;
-			Value block(const IntMatrix&, const IntMatrix&) const;
-			template <template <typename T> typename Op> Value bop(const Value&) const;
-
-			template <typename T> Matrix<T>& get();
-			void setBlock(const IntMatrix&, const IntMatrix&, const Value&);*/
-
-			/*template <typename Tcurrent, typename Tcast>
-			Matrix<Tcast> castTo() const
-			{
-				Matrix<Tcurrent> tempCurrent{std::get<Matrix<Tcurrent>>(this->_value)};
-				Tcurrent* dataCurrentPtr = tempCurrent.data();
-				auto m = tempCurrent.rows();
-				auto n = tempCurrent.cols();
-				if (m == 0 && dataCurrentPtr != nullptr)
-				{
-					Matrix<Tcast> tempCast{static_cast<Tcast>(dataCurrentPtr[0])};
-					return tempCast;
-				}
-				Tcast* dataCast = new Tcast[m * n];
-				for (size_t s = m * n, i{}; i < s; ++i)
-					dataCast[i] = static_cast<Tcast>(dataCurrentPtr[i]);
-				Matrix<Tcast> tempCast(m, n, dataCast);
-				std::cout << "Type of Tcast: " << typeid(Tcast).name() << std::endl;
-				std::cout << "Type of dataCast: " << typeid(*dataCast).name() << std::endl;
-				return tempCast;
-			}*/
 
 			template <typename T>
 			Matrix<T> get() const
