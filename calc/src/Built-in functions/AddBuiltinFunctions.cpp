@@ -43,10 +43,6 @@ void
 addBuiltinFunctions(Scope* scope)
 {
 	addFunction(&zeroes, "zeroes", addParameters(2, "row_size", "col_size"), addParameters(1, "zero_matrix"), scope);
-
-	String str;
-	foo(str);
-
 }
 
 }
