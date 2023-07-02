@@ -55,7 +55,12 @@ namespace ast
 class Parameter: public Declaration
 {
 public:
+  Parameter(const String& name) : Declaration(name) {};
+  Parameter(const String* name) : Declaration(*name) {};
   using Declaration::Declaration;
+  
+  void resolve(Scope*) { ; }
+  JumpCode execute(Frame*) const { return NEXT; }
 
 }; // Parameter
 
@@ -74,6 +79,12 @@ public:
 
   FunctionDeclaration():
     Declaration{{}}
+  {
+    // do nothing
+  }
+
+  FunctionDeclaration(Func* f, String name, ParameterList& parameters, ParameterList& outputs): Declaration{name},
+    _function{ f }, _parameters{ parameters }, _output{ outputs }
   {
     // do nothing
   }

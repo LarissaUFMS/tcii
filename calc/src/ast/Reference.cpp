@@ -119,7 +119,7 @@ namespace calc::ast
     else if (function != nullptr)
     {
       Value* func_return = new Value[this->function->output().size()];
-      FrameFunction ff(this->function->parameters().size(), this->function->output().size());
+      FrameFunction ff((int)this->function->parameters().size(), (int)this->function->output().size());
 
       ff.writeInputs(&_arguments, frame);
 

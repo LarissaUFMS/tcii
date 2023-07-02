@@ -135,7 +135,7 @@ namespace calc::ast
       {
         auto output_size = function->output().size();
         Value* func_return = new Value[output_size];
-        FrameFunction ff(function->parameters().size(), output_size);
+        FrameFunction ff((int)function->parameters().size(), (int)output_size);
 
         ff.writeInputs(&_reference->arguments(), frame);
 

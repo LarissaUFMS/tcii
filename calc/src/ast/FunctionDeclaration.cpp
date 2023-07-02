@@ -41,12 +41,11 @@ namespace calc::ast
     auto param_itr_i = pl.begin();
     auto param_itr_j = pl.begin();
     auto param_end = pl.end();
-    auto& cmp = param_itr_i->name();
     bool invalid_variable = false;
-
 
     for (; param_itr_i != param_end && !invalid_variable; param_itr_i++)
     {
+      auto& cmp = param_itr_i->name();
       for (param_itr_j = param_itr_i; param_itr_j != param_end; param_itr_j++)
       {
         if (cmp == param_itr_j->name())
